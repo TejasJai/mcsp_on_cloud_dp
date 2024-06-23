@@ -1,0 +1,250 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 3dc1a6d1728fec8bbe86770173b18ec949cad14d1a180721330e493dd8eedf87
+    cni.projectcalico.org/podIP: 172.21.182.13/32
+    cni.projectcalico.org/podIPs: 172.21.182.13/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.182.13"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-11T13:29:27Z"
+  generateName: argocd-dex-server-5b6dc79785-
+  labels:
+    app.kubernetes.io/name: argocd-dex-server
+    bcdr-candidate: t
+    by-squad: mcsp-argocd
+    component-name: argocd-resource
+    for-product: all
+    pod-template-hash: 5b6dc79785
+  name: argocd-dex-server-5b6dc79785-5knl2
+  namespace: argocd-worker
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: argocd-dex-server-5b6dc79785
+    uid: 3cfe35f3-bc83-4405-837f-c6680bac2b7f
+  resourceVersion: "175408148"
+  uid: b703f38d-2059-4582-bef6-444e935f2494
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: argocd
+          topologyKey: kubernetes.io/hostname
+        weight: 5
+  containers:
+  - command:
+    - /shared/argocd-dex
+    - rundex
+    env:
+    - name: ARGOCD_DEX_SERVER_DISABLE_TLS
+      valueFrom:
+        configMapKeyRef:
+          key: dexserver.disable.tls
+          name: argocd-cmd-params-cm
+          optional: true
+    image: icr.io/automation-saas-platform/cicd/dex:v2.38.0-patched
+    imagePullPolicy: Always
+    name: dex
+    ports:
+    - containerPort: 5556
+      protocol: TCP
+    - containerPort: 5557
+      protocol: TCP
+    - containerPort: 5558
+      protocol: TCP
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /shared
+      name: static-files
+    - mountPath: /tmp
+      name: dexconfig
+    - mountPath: /tls
+      name: argocd-dex-server-tls
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-jzkkq
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: argocd-icr-ips
+  initContainers:
+  - command:
+    - /bin/cp
+    - -n
+    - /usr/local/bin/argocd
+    - /shared/argocd-dex
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: Always
+    name: copyutil
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /shared
+      name: static-files
+    - mountPath: /tmp
+      name: dexconfig
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-jzkkq
+      readOnly: true
+  nodeName: 192.168.33.22
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000720000
+    seLinuxOptions:
+      level: s0:c27,c9
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: argocd-dex-server
+  serviceAccountName: argocd-dex-server
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - emptyDir: {}
+    name: static-files
+  - emptyDir: {}
+    name: dexconfig
+  - name: argocd-dex-server-tls
+    secret:
+      defaultMode: 420
+      items:
+      - key: tls.crt
+        path: tls.crt
+      - key: tls.key
+        path: tls.key
+      - key: ca.crt
+        path: ca.crt
+      optional: true
+      secretName: argocd-dex-server-tls
+  - name: kube-api-access-jzkkq
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:30:01Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:30:24Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:30:24Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:29:27Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://6c248ea36f36e668e497c259ef49ca89ebfe9ce56c25f518fdebb39bda11138a
+    image: icr.io/automation-saas-platform/cicd/dex:v2.38.0-patched
+    imageID: icr.io/automation-saas-platform/cicd/dex@sha256:c019070d04e343dfcea1249d3b416021c725e1b68092e5d99d27ac7aa054724e
+    lastState: {}
+    name: dex
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T13:30:24Z"
+  hostIP: 192.168.33.22
+  initContainerStatuses:
+  - containerID: cri-o://49327c701a1dc4d19967bd873e2d150d737827f137d8041ce5c11f92f9b5bc74
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: copyutil
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: cri-o://49327c701a1dc4d19967bd873e2d150d737827f137d8041ce5c11f92f9b5bc74
+        exitCode: 0
+        finishedAt: "2024-06-11T13:30:01Z"
+        reason: Completed
+        startedAt: "2024-06-11T13:30:00Z"
+  phase: Running
+  podIP: 172.21.182.13
+  podIPs:
+  - ip: 172.21.182.13
+  qosClass: Burstable
+  startTime: "2024-06-11T13:29:27Z"

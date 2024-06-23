@@ -1,0 +1,285 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 3bd9a7edd9988b15d7a37a969f7d152164c63e2288cc18ecd9db1ae469da871e
+    cni.projectcalico.org/podIP: 172.21.137.18/32
+    cni.projectcalico.org/podIPs: 172.21.137.18/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.137.18"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    kubectl.kubernetes.io/restartedAt: "2024-05-16T11:51:20Z"
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-21T12:02:30Z"
+  generateName: ibm-saas-console-api-deployment-stage-55b785c495-
+  labels:
+    app: ibm-saas-console-api
+    pod-template-hash: 55b785c495
+    version: 1.2.0
+  name: ibm-saas-console-api-deployment-stage-55b785c495-24mvz
+  namespace: ibm-saas-console
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: ibm-saas-console-api-deployment-stage-55b785c495
+    uid: dcd5f547-ce40-4288-beaf-0c71a68d3fc7
+  resourceVersion: "204087446"
+  uid: 9a344107-89e8-42e1-a0c8-1b1094b4256c
+spec:
+  automountServiceAccountToken: true
+  containers:
+  - env:
+    - name: DEPLOYMENT_ENV
+      valueFrom:
+        configMapKeyRef:
+          key: DEPLOYMENT_ENV
+          name: ibm-saas-console-config-stage
+    - name: HOSTNAME
+      valueFrom:
+        configMapKeyRef:
+          key: HOSTNAME
+          name: ibm-saas-console-config-stage
+    - name: METERING_API
+      valueFrom:
+        configMapKeyRef:
+          key: METERING_API
+          name: ibm-saas-console-config-stage
+    - name: IAM_API
+      valueFrom:
+        configMapKeyRef:
+          key: IAM_API
+          name: ibm-saas-console-config-stage
+    - name: PRODUCT_API
+      valueFrom:
+        configMapKeyRef:
+          key: PRODUCT_API
+          name: ibm-saas-console-config-stage
+    - name: SUBSCRIPTION_API
+      valueFrom:
+        configMapKeyRef:
+          key: SUBSCRIPTION_API
+          name: ibm-saas-console-config-stage
+    - name: INSTANCE_API
+      valueFrom:
+        configMapKeyRef:
+          key: INSTANCE_API
+          name: ibm-saas-console-config-stage
+    - name: ACCOUNT_API
+      valueFrom:
+        configMapKeyRef:
+          key: ACCOUNT_API
+          name: ibm-saas-console-config-stage
+    - name: API_OAUTH_TOKEN_URL
+      valueFrom:
+        configMapKeyRef:
+          key: API_OAUTH_TOKEN_URL
+          name: ibm-saas-console-config-stage
+    - name: CERT_DIR
+      valueFrom:
+        configMapKeyRef:
+          key: CERT_DIR
+          name: ibm-saas-console-config-stage
+    - name: ISSUER_BASE_URL
+      valueFrom:
+        configMapKeyRef:
+          key: ISSUER_BASE_URL
+          name: ibm-saas-console-config-stage
+    - name: APOLLO_CLIENT_API_URL
+      valueFrom:
+        configMapKeyRef:
+          key: APOLLO_CLIENT_API_URL
+          name: ibm-saas-console-config-stage
+    - name: REDIS_HOST
+      valueFrom:
+        configMapKeyRef:
+          key: REDIS_HOST
+          name: ibm-saas-console-config-stage
+    image: icr.io/mcsp/ui/api_service:fix-redis-ab8ada1141896e8d2bedaa7e520d9445d04a99d0
+    imagePullPolicy: Always
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz/liveness
+        port: 3000
+        scheme: HTTPS
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: ibm-saas-console-api
+    ports:
+    - containerPort: 3000
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz/readiness
+        port: 3000
+        scheme: HTTPS
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 200m
+        memory: 128Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000920000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /opt/app-root/src/apps/api/.env
+      name: ibm-saas-console-secrets-stage
+      readOnly: true
+      subPath: .env
+    - mountPath: /opt/app-root/src/security
+      name: ibm-saas-console-api-server-stage-tls
+      readOnly: true
+    - mountPath: /opt/app-root/src/security/mutual-tls-auth
+      name: mutual-tls-auth
+      readOnly: true
+    - mountPath: /mnt/tls
+      name: tls
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-mjg4c
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: ibm-saas-console-pull-secret
+  nodeName: 192.168.33.28
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000920000
+    seLinuxOptions:
+      level: s0:c30,c25
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: ibm-saas-console-sa
+  serviceAccountName: ibm-saas-console-sa
+  terminationGracePeriodSeconds: 10
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: ibm-saas-console-secrets-stage
+    secret:
+      defaultMode: 420
+      secretName: ibm-saas-console-secrets-stage
+  - name: ibm-saas-console-api-server-stage-tls
+    secret:
+      defaultMode: 420
+      secretName: ibm-saas-console-api-server-stage-tls
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: service-ca.crt
+        path: ca.crt
+      name: openshift-service-ca.crt
+    name: tls
+  - name: mutual-tls-auth
+    projected:
+      defaultMode: 420
+      sources:
+      - secret:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          name: server-cert
+  - name: kube-api-access-mjg4c
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T12:02:30Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T12:05:11Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T12:05:11Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T12:02:30Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://a5a3a054fa59df7a876bf31f33023d8a53b942c4a238c2cd87da787bcab6c298
+    image: icr.io/mcsp/ui/api_service:fix-redis-ab8ada1141896e8d2bedaa7e520d9445d04a99d0
+    imageID: icr.io/mcsp/ui/api_service@sha256:324738aaa5ed543ac35f5c83d26f8c83c1ddbd4bfbef97dc8a99ff1f52c9ad8d
+    lastState: {}
+    name: ibm-saas-console-api
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-21T12:05:04Z"
+  hostIP: 192.168.33.28
+  phase: Running
+  podIP: 172.21.137.18
+  podIPs:
+  - ip: 172.21.137.18
+  qosClass: Burstable
+  startTime: "2024-06-21T12:02:30Z"

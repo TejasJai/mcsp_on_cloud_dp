@@ -1,0 +1,203 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: b13b7119f0d92460f3d66fd64931d7659f3055367de74829ccac67ea5b1c0e33
+    cni.projectcalico.org/podIP: 172.21.7.66/32
+    cni.projectcalico.org/podIPs: 172.21.7.66/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.7.66"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: privileged
+  creationTimestamp: "2024-06-11T17:10:10Z"
+  generateName: crowdstrike-
+  labels:
+    cname: staging
+    controller-revision-hash: c68f86688
+    ctype: public
+    name: crowdstrike
+    pod-template-generation: "2"
+    provider: ibm
+    region: us-east
+    resource: crowdstrike
+    resource-type: daemonset
+    scope: a_f54c77c51e9e4f189a7d1de589b2e203
+  name: crowdstrike-25cns
+  namespace: ibm-services-system
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: crowdstrike
+    uid: 790e2e5a-615c-486f-a8fb-207adbf9ebe6
+  resourceVersion: "175956373"
+  uid: 3241d5f9-c84a-43b3-b010-364e4b9e4051
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - 192.168.34.33
+  containers:
+  - env:
+    - name: CROWDSTRIKE_CUSTOMER_ID
+      value: 080749321C014B58A54CDD95E7F5C166-50
+    - name: CROWDSTRIKE_EU_LOCALES
+      value: "1"
+    - name: CROWDSTRIKE_TAG
+      value: UPDATES/NONE,AV/NO
+    - name: CRN_BASE
+      value: crn:v1:staging:public:mcsp-ibm-cloud
+    - name: CROWDSTRIKE_ENABLED
+      value: "true"
+    envFrom:
+    - configMapRef:
+        name: crn-info-services
+    image: us.icr.io/armada-csutil/crowdstrike:114-db83abe2a3861dc90b6859aac346f22e7914e09c-rhel
+    imagePullPolicy: Always
+    livenessProbe:
+      exec:
+        command:
+        - ./crowdstrike/cmd.sh
+        - alive
+      failureThreshold: 1
+      initialDelaySeconds: 180
+      periodSeconds: 900
+      successThreshold: 1
+      timeoutSeconds: 2
+    name: crowdstrike
+    readinessProbe:
+      exec:
+        command:
+        - ./crowdstrike/cmd.sh
+        - ready
+      failureThreshold: 1
+      initialDelaySeconds: 10
+      periodSeconds: 900
+      successThreshold: 1
+      timeoutSeconds: 2
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 50m
+        memory: 8Mi
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /host/opt
+      name: installpath
+    - mountPath: /host/etc
+      name: etc
+    - mountPath: /host/tmp
+      name: tmp
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-kjn24
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostIPC: true
+  hostPID: true
+  imagePullSecrets:
+  - name: kubeprofiles-registry
+  nodeName: 192.168.34.33
+  nodeSelector:
+    topology.kubernetes.io/region: us-east
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  volumes:
+  - hostPath:
+      path: /opt
+      type: ""
+    name: installpath
+  - hostPath:
+      path: /etc
+      type: ""
+    name: etc
+  - hostPath:
+      path: /tmp
+      type: ""
+    name: tmp
+  - name: kube-api-access-kjn24
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:10:10Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:24:19Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:24:19Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:10:10Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://4e7135b1dbf97f3edb2b3c0fecd34f1fc2c3da8231939c24b97a1f653c9a6853
+    image: us.icr.io/armada-csutil/crowdstrike:114-db83abe2a3861dc90b6859aac346f22e7914e09c-rhel
+    imageID: us.icr.io/armada-csutil/crowdstrike@sha256:649f765cdb826f7a13d8ce44d6408fe953317b00d4c9cb871d69e0026b770f30
+    lastState: {}
+    name: crowdstrike
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T17:12:39Z"
+  hostIP: 192.168.34.33
+  phase: Running
+  podIP: 172.21.7.66
+  podIPs:
+  - ip: 172.21.7.66
+  qosClass: Burstable
+  startTime: "2024-06-11T17:10:10Z"

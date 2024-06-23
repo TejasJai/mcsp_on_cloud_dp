@@ -1,0 +1,236 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: ef03cdad0d035fe0d7796e5120dbc698ffd616195d1ccb610b08cfc582f6db1f
+    cni.projectcalico.org/podIP: 172.21.182.6/32
+    cni.projectcalico.org/podIPs: 172.21.182.6/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.182.6"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: privileged
+  creationTimestamp: "2024-06-11T13:21:15Z"
+  generateName: syslog-configurator-
+  labels:
+    app: syslog-configurator
+    cname: staging
+    controller-revision-hash: 55d6885f78
+    ctype: public
+    name: syslog-configurator
+    pod-template-generation: "3"
+    provider: ibm
+    region: us-east
+    resource: syslog-configurator
+    resource-type: daemonset
+    scope: a_f54c77c51e9e4f189a7d1de589b2e203
+  name: syslog-configurator-4v4w4
+  namespace: ibm-services-system
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: syslog-configurator
+    uid: 500557fd-7714-4c2a-8bb6-c815d4112e41
+  resourceVersion: "175397174"
+  uid: a5999887-a723-4866-90d7-98ee864181cc
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - 192.168.33.22
+  containers:
+  - env:
+    - name: MY_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    - name: EPS_FQDN
+      value: $(SYSLOG_FORWARDER_SERVICE_SERVICE_HOST)
+    - name: EPS_PORT
+      value: "10514"
+    - name: DLC_ENABLED
+      value: "false"
+    - name: CRN_BASE
+      value: crn:v1:staging:public:mcsp-ibm-cloud
+    - name: SOS_ADMIN_W3ID
+      value: replace_with_eamil
+    envFrom:
+    - configMapRef:
+        name: crn-info-services
+    image: us.icr.io/armada-csutil/syslog-configurator:110-1c8a0576c9268c95d80dfa182536ec8637375558
+    imagePullPolicy: Always
+    name: syslog-configurator
+    resources:
+      limits:
+        cpu: "1"
+        memory: 500Mi
+      requests:
+        cpu: 100m
+        memory: 64Mi
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /host/etc/rsyslog.conf
+      name: hostlogconfig
+    - mountPath: /host/etc/os-release
+      name: hostos-release
+    - mountPath: /host/tmp
+      name: tmp
+    - mountPath: /host/run/systemd/journal
+      name: systemd-journal
+    - mountPath: /opt/SOS/qradar/TLSsyslog/certs
+      name: dlc-cert
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-rn2t7
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostIPC: true
+  hostPID: true
+  imagePullSecrets:
+  - name: kubeprofiles-registry
+  initContainers:
+  - command:
+    - sh
+    - -c
+    - if [ "$DLC_ENABLED" = true ]; then while echo "Q" | openssl s_client -connect
+      ${DLC_SERVICE_SERVICE_HOST}:${DLC_SERVICE_SERVICE_PORT} -showcerts | sed -n
+      "/^-----BEGIN CERTIFICATE-----$/,/^-----END CERTIFICATE-----$/p" > /tmp/dlc-public_cert.pem;
+      ! [ -s /tmp/dlc-public_cert.pem  ]; do sleep 10; done; else echo "DLC is disabled";
+      fi
+    env:
+    - name: DLC_ENABLED
+      value: "false"
+    image: us.icr.io/armada-csutil/syslog-configurator:110-1c8a0576c9268c95d80dfa182536ec8637375558
+    imagePullPolicy: IfNotPresent
+    name: dlc-init
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-rn2t7
+      readOnly: true
+  nodeName: 192.168.33.22
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  volumes:
+  - hostPath:
+      path: /etc/rsyslog.conf
+      type: FileOrCreate
+    name: hostlogconfig
+  - hostPath:
+      path: /etc/os-release
+      type: ""
+    name: hostos-release
+  - hostPath:
+      path: /tmp
+      type: ""
+    name: tmp
+  - hostPath:
+      path: /run/systemd/journal
+      type: ""
+    name: systemd-journal
+  - hostPath:
+      path: /opt/SOS/qradar/TLSsyslog/certs
+      type: ""
+    name: dlc-cert
+  - name: kube-api-access-rn2t7
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:25:08Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:25:09Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:25:09Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:21:15Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://2fdbaccd627ca479050ae1320ff549696946cba3319ed91a35f5231f70ad32d2
+    image: us.icr.io/armada-csutil/syslog-configurator:110-1c8a0576c9268c95d80dfa182536ec8637375558
+    imageID: us.icr.io/armada-csutil/syslog-configurator@sha256:0cd52b11f038c65e267a4f749cab64675b96edd59ff5dd864204eb936893b873
+    lastState: {}
+    name: syslog-configurator
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T13:25:09Z"
+  hostIP: 192.168.33.22
+  initContainerStatuses:
+  - containerID: cri-o://b89f853b66a324a0b238ba0fd054e133785d1921c4582883b42e5eabc2f40e71
+    image: us.icr.io/armada-csutil/syslog-configurator:110-1c8a0576c9268c95d80dfa182536ec8637375558
+    imageID: us.icr.io/armada-csutil/syslog-configurator@sha256:0cd52b11f038c65e267a4f749cab64675b96edd59ff5dd864204eb936893b873
+    lastState: {}
+    name: dlc-init
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: cri-o://b89f853b66a324a0b238ba0fd054e133785d1921c4582883b42e5eabc2f40e71
+        exitCode: 0
+        finishedAt: "2024-06-11T13:25:07Z"
+        reason: Completed
+        startedAt: "2024-06-11T13:25:07Z"
+  phase: Running
+  podIP: 172.21.182.6
+  podIPs:
+  - ip: 172.21.182.6
+  qosClass: Burstable
+  startTime: "2024-06-11T13:21:17Z"

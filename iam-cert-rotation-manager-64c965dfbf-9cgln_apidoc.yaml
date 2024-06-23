@@ -1,0 +1,174 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 0b1675ecb500c2ac5c00fcba4030fe51ef7e055b875c15fa006c75d84acfd6d7
+    cni.projectcalico.org/podIP: 172.21.138.208/32
+    cni.projectcalico.org/podIPs: 172.21.138.208/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.138.208"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    kubectl.kubernetes.io/default-container: manager
+    openshift.io/scc: anyuid
+  creationTimestamp: "2024-06-11T18:19:37Z"
+  generateName: iam-cert-rotation-manager-64c965dfbf-
+  labels:
+    by-squad: mcsp-access-management
+    control-plane: iam-cert-rotation-manager
+    for-product: all
+    pod-template-hash: 64c965dfbf
+  name: iam-cert-rotation-manager-64c965dfbf-9cgln
+  namespace: msp-user-manager
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: iam-cert-rotation-manager-64c965dfbf
+    uid: f0a14d96-d6c3-4f7d-8c34-ff5a83e2c114
+  resourceVersion: "176094469"
+  uid: 4ed4a881-99e1-4dc1-bd0d-a2ad3bf28fda
+spec:
+  containers:
+  - command:
+    - /manager
+    env:
+    - name: WATCH_NAMESPACE
+      value: msp-user-manager
+    image: icr.io/automation-saas-platform/access-management/iam-cert-rotation:20240604083539-main-5d459e59d7341148c3f1b81a59070af2c874b72a
+    imagePullPolicy: Always
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: 8081
+        scheme: HTTP
+      initialDelaySeconds: 15
+      periodSeconds: 20
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: manager
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /readyz
+        port: 8081
+        scheme: HTTP
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: 5m
+        memory: 64Mi
+      requests:
+        cpu: 2m
+        memory: 32Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+        - MKNOD
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6v27h
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: msp-iam-cert-rotation-pull-secret
+  nodeName: 192.168.33.27
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    runAsNonRoot: true
+    seLinuxOptions:
+      level: s0:c31,c5
+  serviceAccount: msp-iam-cert-rotation-sa
+  serviceAccountName: msp-iam-cert-rotation-sa
+  terminationGracePeriodSeconds: 10
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: kube-api-access-6v27h
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T18:19:37Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T18:21:48Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T18:21:48Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T18:19:37Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://97fbe5a6d068647cb10dea18c7c816aec6e742dfea244eace3289e49db500643
+    image: icr.io/automation-saas-platform/access-management/iam-cert-rotation:20240604083539-main-5d459e59d7341148c3f1b81a59070af2c874b72a
+    imageID: icr.io/automation-saas-platform/access-management/iam-cert-rotation@sha256:89edeec498dfe25a3dc6fecc4954b76771b17198ccfc07ee83abaaa6c443a5bd
+    lastState: {}
+    name: manager
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T18:21:34Z"
+  hostIP: 192.168.33.27
+  phase: Running
+  podIP: 172.21.138.208
+  podIPs:
+  - ip: 172.21.138.208
+  qosClass: Burstable
+  startTime: "2024-06-11T18:19:37Z"

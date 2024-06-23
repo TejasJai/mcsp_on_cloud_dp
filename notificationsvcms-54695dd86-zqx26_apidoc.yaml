@@ -1,0 +1,297 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 92572c444bbf3b8048225cc6436dc439c0325f4d44cb8dac52b2393c6dd41578
+    cni.projectcalico.org/podIP: 172.21.237.70/32
+    cni.projectcalico.org/podIPs: 172.21.237.70/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.237.70"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    libertyOperator: WebSphere Liberty
+    openshift.io/scc: restricted-v2
+    productChargedContainers: app
+    productID: e7daacc46bbe4e2dacd2af49145a4723
+    productMetric: PROCESSOR_VALUE_UNIT
+    productName: IBM WebSphere Application Server
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-21T22:48:35Z"
+  generateName: notificationsvcms-54695dd86-
+  labels:
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/instance: notificationsvcms
+    app.kubernetes.io/managed-by: websphere-liberty-operator
+    app.kubernetes.io/name: notificationsvcms
+    app.kubernetes.io/part-of: notificationsvcms
+    bcdr-candidate: t
+    by-squad: mcsp-instance-management
+    component-name: tenant-management
+    for-product: all
+    liberty.websphere.ibm.com/name: notificationsvcms
+    name: notificationsvcms
+    pod-template-hash: 54695dd86
+  name: notificationsvcms-54695dd86-zqx26
+  namespace: tenant-management
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: notificationsvcms-54695dd86
+    uid: d750da0f-ed75-4bf5-a291-4770e5ef2713
+  resourceVersion: "205283991"
+  uid: 040b5527-ae84-4f9b-8ff4-ffa13d8539dd
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: notificationsvcms
+          topologyKey: topology.kubernetes.io/zone
+        weight: 50
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: notificationsvcms
+          topologyKey: kubernetes.io/hostname
+        weight: 50
+  automountServiceAccountToken: true
+  containers:
+  - env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    - name: POD_IMAGE_NAME
+      value: icr.io/automation-saas-platform/tenant-management/notificationsvc:20240621002726-main-c52bc48ff7dffac2eae787d215e6092446be96cc
+    - name: TLS_DIR
+      value: /etc/x509/certs
+    - name: SA_RESOURCE_VERSION
+      value: "112180198"
+    - name: WLP_LOGGING_CONSOLE_LOGLEVEL
+      value: info
+    - name: WLP_LOGGING_CONSOLE_SOURCE
+      value: message,accessLog,ffdc,audit
+    - name: WLP_LOGGING_CONSOLE_FORMAT
+      value: json
+    - name: SEC_IMPORT_K8S_CERTS
+      value: "true"
+    - name: SERVICE_CERT_SECRET_RESOURCE_VERSION
+      value: "112180259"
+    envFrom:
+    - configMapRef:
+        name: notificationsvcms-env-configmap-staging
+    image: icr.io/automation-saas-platform/tenant-management/notificationsvc:20240621002726-main-c52bc48ff7dffac2eae787d215e6092446be96cc
+    imagePullPolicy: Always
+    name: app
+    ports:
+    - containerPort: 9446
+      name: 9446-tcp
+      protocol: TCP
+    resources:
+      limits:
+        cpu: "1"
+        memory: 600Mi
+      requests:
+        cpu: 100m
+        memory: 400Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: false
+      runAsNonRoot: true
+      runAsUser: 1000960000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/tokens
+      name: notificationsvcms-token
+    - mountPath: /config/variables/oidc
+      name: notificationsvcms-oidc
+      readOnly: true
+    - mountPath: /config/variables/okd
+      name: notificationsvcms-okd
+      readOnly: true
+    - mountPath: /config/variables/sendgrid
+      name: notificationsvcms-sendgrid
+      readOnly: true
+    - mountPath: /config/variables
+      name: notificationsvcms-mpconfig
+      readOnly: true
+    - mountPath: /var/mtls/certs
+      name: notificationsvcms-mtls-cert
+      readOnly: true
+    - mountPath: /var/product/registration
+      name: notificationsvcms-product-reg-ca-cert
+      readOnly: true
+    - mountPath: /etc/x509/certs
+      name: svc-certificate
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-pzlfq
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: notificationsvcms-global-registry-secret
+  - name: notificationsvcms-dockercfg-rc8dt
+  nodeName: 192.168.34.31
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000960000
+    seLinuxOptions:
+      level: s0:c31,c15
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: notificationsvcms
+  serviceAccountName: notificationsvcms
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  topologySpreadConstraints:
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/instance: notificationsvcms
+    maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/instance: notificationsvcms
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+  volumes:
+  - name: notificationsvcms-token
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          audience: openshift
+          expirationSeconds: 7200
+          path: notificationsvcms-token
+  - name: notificationsvcms-oidc
+    secret:
+      defaultMode: 420
+      secretName: notificationsvcms-oidc-client-auth
+  - name: notificationsvcms-okd
+    secret:
+      defaultMode: 420
+      secretName: notificationsvcms-okd-auth
+  - name: notificationsvcms-sendgrid
+    secret:
+      defaultMode: 420
+      secretName: notificationsvcms-sendgrid-auth
+  - name: notificationsvcms-mpconfig
+    secret:
+      defaultMode: 420
+      secretName: notificationsvcms-mpconfig-secrets
+  - name: notificationsvcms-mtls-cert
+    secret:
+      defaultMode: 420
+      secretName: notificationsvcms-mtls-cert-secret
+  - name: notificationsvcms-product-reg-ca-cert
+    secret:
+      defaultMode: 420
+      secretName: notificationsvcms-product-reg-ca-cert
+  - name: svc-certificate
+    secret:
+      defaultMode: 420
+      secretName: notificationsvcms-svc-tls-cm
+  - name: kube-api-access-pzlfq
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:48:35Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:48:50Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:48:50Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:48:35Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://c5c574682e7a15833d833b2ea0a2310a0e54f0fb55ab0e2a8ac19cd429bb653e
+    image: icr.io/automation-saas-platform/tenant-management/notificationsvc:20240621002726-main-c52bc48ff7dffac2eae787d215e6092446be96cc
+    imageID: icr.io/automation-saas-platform/tenant-management/notificationsvc@sha256:56e6bc1ebe1595ac301e114c246406e0a1e85e810fdd0858cf21e5f8824f8708
+    lastState: {}
+    name: app
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-21T22:48:49Z"
+  hostIP: 192.168.34.31
+  phase: Running
+  podIP: 172.21.237.70
+  podIPs:
+  - ip: 172.21.237.70
+  qosClass: Burstable
+  startTime: "2024-06-21T22:48:35Z"

@@ -1,0 +1,179 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 3fa8dfe0c43e0d985c5e03f92f48db73220fc00da6fdc5187096b3978a3fb5c4
+    cni.projectcalico.org/podIP: 172.21.14.210/32
+    cni.projectcalico.org/podIPs: 172.21.14.210/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.14.210"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: bcdr-scc
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-11T15:00:45Z"
+  generateName: bcdr-volume-watcher-5cf66854b7-
+  labels:
+    app: bcdr-volume-watcher
+    by-squad: mcsp-controlplane
+    for-product: private
+    pod-template-hash: 5cf66854b7
+  name: bcdr-volume-watcher-5cf66854b7-qmr8h
+  namespace: oadp-velero
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: bcdr-volume-watcher-5cf66854b7
+    uid: 19ae23a8-22ba-4d48-a597-05cf4fc6e210
+  resourceVersion: "175619020"
+  uid: 47803f74-2b3f-4eb4-91ed-eff52bddd2e2
+spec:
+  containers:
+  - env:
+    - name: mode
+      value: filter
+    - name: namespace_list
+    - name: namespace_filter
+      value: '{"tracked-by":"bcdr-agent"}'
+    - name: cluster_region
+      value: us-east
+    - name: envLogLevel
+      value: info
+    - name: infrastructure
+      value: ibm
+    envFrom:
+    - configMapRef:
+        name: bcdr-volume-tags-config
+    image: icr.io/cr-controlplane-release/bcdr-volume-backup:1.0.3
+    imagePullPolicy: Always
+    name: bcdr-volume-watcher
+    resources:
+      limits:
+        cpu: 250m
+        memory: 64Mi
+      requests:
+        cpu: 100m
+        memory: 32Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsUser: 1000750000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/secret-volume
+      name: cloud-credentials
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-89hrn
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: controlplane-imagepullsecret
+  - name: bcdr-volume-backup-sa-dockercfg-zp24t
+  nodeName: 192.168.32.24
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000750000
+    runAsNonRoot: true
+    seLinuxOptions:
+      level: s0:c27,c24
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: bcdr-volume-backup-sa
+  serviceAccountName: bcdr-volume-backup-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: cloud-credentials
+    secret:
+      defaultMode: 420
+      secretName: cloud-credentials-ibm
+  - name: kube-api-access-89hrn
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:00:45Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:03:51Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:03:51Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:00:45Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://96234f9dce6249511adf3e516ee1d2c90f69c0f39a2bb8b18c3781e9a9c009de
+    image: icr.io/cr-controlplane-release/bcdr-volume-backup:1.0.3
+    imageID: icr.io/cr-controlplane-release/bcdr-volume-backup@sha256:e53893daa51f0c32997b7449f7636f109d7d6d9d2bbb24147761e7844c9699dc
+    lastState: {}
+    name: bcdr-volume-watcher
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T15:03:51Z"
+  hostIP: 192.168.32.24
+  phase: Running
+  podIP: 172.21.14.210
+  podIPs:
+  - ip: 172.21.14.210
+  qosClass: Burstable
+  startTime: "2024-06-11T15:00:45Z"

@@ -1,0 +1,325 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+    cni.projectcalico.org/containerID: b220cd7b049d4100fd7b199b7add4fc43a771d425af395ab9073598eb76ab502
+    cni.projectcalico.org/podIP: 172.21.14.207/32
+    cni.projectcalico.org/podIPs: 172.21.14.207/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.14.207"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    libertyOperator: WebSphere Liberty
+    openshift.io/scc: restricted-v2
+    productChargedContainers: app
+    productID: e7daacc46bbe4e2dacd2af49145a4723
+    productMetric: PROCESSOR_VALUE_UNIT
+    productName: IBM WebSphere Application Server
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-21T22:56:18Z"
+  generateName: subscriptmgtms-6645c69d85-
+  labels:
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/instance: subscriptmgtms
+    app.kubernetes.io/managed-by: websphere-liberty-operator
+    app.kubernetes.io/name: subscriptmgtms
+    app.kubernetes.io/part-of: subscriptmgtms
+    bcdr-candidate: t
+    by-squad: mcsp-instance-management
+    component-name: tenant-management
+    for-product: all
+    liberty.websphere.ibm.com/name: subscriptmgtms
+    name: subscriptmgtms
+    pod-template-hash: 6645c69d85
+  name: subscriptmgtms-6645c69d85-z242z
+  namespace: tenant-management
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: subscriptmgtms-6645c69d85
+    uid: 5c510909-eba9-4ac7-9453-c729cfc810d7
+  resourceVersion: "205299839"
+  uid: d01fa13a-060d-4b71-9621-41a7f2502a3e
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: subscriptmgtms
+          topologyKey: topology.kubernetes.io/zone
+        weight: 50
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: subscriptmgtms
+          topologyKey: kubernetes.io/hostname
+        weight: 50
+  automountServiceAccountToken: true
+  containers:
+  - env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    - name: POD_IMAGE_NAME
+      value: icr.io/automation-saas-platform/tenant-management/subscriptmgt:20240620232208-main-d2cbdb8908675a660618d88678fa5aae36329c67
+    - name: TLS_DIR
+      value: /etc/x509/certs
+    - name: SA_RESOURCE_VERSION
+      value: "112175266"
+    - name: WLP_LOGGING_CONSOLE_LOGLEVEL
+      value: info
+    - name: WLP_LOGGING_CONSOLE_SOURCE
+      value: message,accessLog,ffdc,audit
+    - name: WLP_LOGGING_CONSOLE_FORMAT
+      value: json
+    - name: SEC_IMPORT_K8S_CERTS
+      value: "true"
+    - name: SERVICE_CERT_SECRET_RESOURCE_VERSION
+      value: "112175311"
+    envFrom:
+    - configMapRef:
+        name: subscriptmgtms-env-configmap-staging
+    image: icr.io/automation-saas-platform/tenant-management/subscriptmgt:20240620232208-main-d2cbdb8908675a660618d88678fa5aae36329c67
+    imagePullPolicy: Always
+    livenessProbe:
+      failureThreshold: 5
+      httpGet:
+        path: /subscriptmgr/api/1.0/health/liveness
+        port: 9444
+        scheme: HTTPS
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    name: app
+    ports:
+    - containerPort: 9444
+      name: 9444-tcp
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /subscriptmgr/api/1.0/health/readiness
+        port: 9444
+        scheme: HTTPS
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    resources:
+      limits:
+        cpu: 1500m
+        memory: 1500Mi
+      requests:
+        cpu: 500m
+        memory: 1000Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: false
+      runAsNonRoot: true
+      runAsUser: 1000960000
+      seccompProfile:
+        type: RuntimeDefault
+    startupProbe:
+      failureThreshold: 60
+      httpGet:
+        path: /subscriptmgr/api/1.0/health/started
+        port: 9444
+        scheme: HTTPS
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/tokens
+      name: subscriptmgtms-token
+    - mountPath: /config/variables/oidc
+      name: subscriptmgtms-oidc
+      readOnly: true
+    - mountPath: /config/variables/okd
+      name: subscriptmgtms-okd
+      readOnly: true
+    - mountPath: /config/variables/ssm
+      name: subscriptmgtms-ssm
+      readOnly: true
+    - mountPath: /config/variables
+      name: subscriptmgtms-mpconfig
+      readOnly: true
+    - mountPath: /var/mtls/certs
+      name: subscriptmgtms-mtls-cert
+      readOnly: true
+    - mountPath: /var/product/registration
+      name: product-reg-ca-cert
+      readOnly: true
+    - mountPath: /etc/x509/certs
+      name: svc-certificate
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-2bhb6
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: subscriptmgtms-global-registry-secret
+  - name: subscriptmgtms-dockercfg-vd2bm
+  nodeName: 192.168.32.24
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000960000
+    seLinuxOptions:
+      level: s0:c31,c15
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: subscriptmgtms
+  serviceAccountName: subscriptmgtms
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  topologySpreadConstraints:
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/instance: subscriptmgtms
+    maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/instance: subscriptmgtms
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+  volumes:
+  - name: subscriptmgtms-token
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          audience: openshift
+          expirationSeconds: 7200
+          path: subscriptmgtms-token
+  - name: subscriptmgtms-oidc
+    secret:
+      defaultMode: 420
+      secretName: subscriptmgtms-oidc-client-auth
+  - name: subscriptmgtms-okd
+    secret:
+      defaultMode: 420
+      secretName: subscriptmgtms-okd-auth
+  - name: subscriptmgtms-ssm
+    secret:
+      defaultMode: 420
+      secretName: subscriptmgtms-ssm-auth
+  - name: subscriptmgtms-mpconfig
+    secret:
+      defaultMode: 420
+      secretName: subscriptmgtms-mpconfig-secrets
+  - name: subscriptmgtms-mtls-cert
+    secret:
+      defaultMode: 420
+      secretName: subscriptmgtms-mtls-cert-secret
+  - name: product-reg-ca-cert
+    secret:
+      defaultMode: 420
+      secretName: product-reg-ca-cert
+  - name: svc-certificate
+    secret:
+      defaultMode: 420
+      secretName: subscriptmgtms-svc-tls-cm
+  - name: kube-api-access-2bhb6
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:56:18Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:56:50Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:56:50Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:56:18Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://f2ba304fff1bd243490feb7eb5fd2f883c88fffffc20a7bde727e4a6709a9fc6
+    image: icr.io/automation-saas-platform/tenant-management/subscriptmgt:20240620232208-main-d2cbdb8908675a660618d88678fa5aae36329c67
+    imageID: icr.io/automation-saas-platform/tenant-management/subscriptmgt@sha256:6242256567d8907a84647edb9cb2829951899151523cdbc0d999e2039a2a0ea9
+    lastState: {}
+    name: app
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-21T22:56:25Z"
+  hostIP: 192.168.32.24
+  phase: Running
+  podIP: 172.21.14.207
+  podIPs:
+  - ip: 172.21.14.207
+  qosClass: Burstable
+  startTime: "2024-06-21T22:56:18Z"

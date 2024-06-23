@@ -1,0 +1,341 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: efd56790f6d517ab98ebbe95fe1245d70d14c582b17b08b5851c0f4c1fc44d28
+    cni.projectcalico.org/podIP: 172.21.170.207/32
+    cni.projectcalico.org/podIPs: 172.21.170.207/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.170.207"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    kubectl.kubernetes.io/restartedAt: "2024-04-18T15:47:46Z"
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-11T15:47:14Z"
+  generateName: argocd-applicationset-controller-595654548f-
+  labels:
+    app.kubernetes.io/name: argocd-applicationset-controller
+    bcdr-candidate: t
+    by-squad: mcsp-argocd
+    component-name: argocd-resource
+    for-product: all
+    pod-template-hash: 595654548f
+  name: argocd-applicationset-controller-595654548f-jk2dl
+  namespace: argocd-worker
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: argocd-applicationset-controller-595654548f
+    uid: 86ad7c8a-5dcd-4731-84d0-b8d869dad4b7
+  resourceVersion: "175731647"
+  uid: 1f869100-c5fd-4ecd-9f10-9e7f8c7c69c8
+spec:
+  containers:
+  - args:
+    - /usr/local/bin/argocd-applicationset-controller
+    env:
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_GLOBAL_PRESERVED_ANNOTATIONS
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.global.preserved.annotations
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_GLOBAL_PRESERVED_LABELS
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.global.preserved.labels
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_ENABLE_LEADER_ELECTION
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.enable.leader.election
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_REPO_SERVER
+      valueFrom:
+        configMapKeyRef:
+          key: repo.server
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_POLICY
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.policy
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_ENABLE_POLICY_OVERRIDE
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.enable.policy.override
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_DEBUG
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.debug
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_LOGFORMAT
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.log.format
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_LOGLEVEL
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.log.level
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_DRY_RUN
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.dryrun
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_GIT_MODULES_ENABLED
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.enable.git.submodule
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_ENABLE_PROGRESSIVE_SYNCS
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.enable.progressive.syncs
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_ENABLE_NEW_GIT_FILE_GLOBBING
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.enable.new.git.file.globbing
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_REPO_SERVER_PLAINTEXT
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.repo.server.plaintext
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_REPO_SERVER_STRICT_TLS
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.repo.server.strict.tls
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_REPO_SERVER_TIMEOUT_SECONDS
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.repo.server.timeout.seconds
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_CONCURRENT_RECONCILIATIONS
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.concurrent.reconciliations.max
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_NAMESPACES
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.namespaces
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_SCM_ROOT_CA_PATH
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.scm.root.ca.path
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_ALLOWED_SCM_PROVIDERS
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.allowed.scm.providers
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATIONSET_CONTROLLER_ENABLE_SCM_PROVIDERS
+      valueFrom:
+        configMapKeyRef:
+          key: applicationsetcontroller.enable.scm.providers
+          name: argocd-cmd-params-cm
+          optional: true
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: Always
+    name: argocd-applicationset-controller
+    ports:
+    - containerPort: 7000
+      name: webhook
+      protocol: TCP
+    - containerPort: 8080
+      name: metrics
+      protocol: TCP
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /tmp
+      name: tmp
+    - mountPath: /app/config/ssh
+      name: ssh-known-hosts
+    - mountPath: /app/config/tls
+      name: tls-certs
+    - mountPath: /app/config/gpg/source
+      name: gpg-keys
+    - mountPath: /app/config/gpg/keys
+      name: gpg-keyring
+    - mountPath: /app/config/reposerver/tls
+      name: argocd-repo-server-tls
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-fngfc
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: argocd-icr-ips
+  nodeName: 192.168.32.26
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000720000
+    runAsNonRoot: true
+    seLinuxOptions:
+      level: s0:c27,c9
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: argocd-applicationset-controller
+  serviceAccountName: argocd-applicationset-controller
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - emptyDir: {}
+    name: tmp
+  - configMap:
+      defaultMode: 420
+      name: argocd-ssh-known-hosts-cm
+    name: ssh-known-hosts
+  - configMap:
+      defaultMode: 420
+      name: argocd-tls-certs-cm
+    name: tls-certs
+  - configMap:
+      defaultMode: 420
+      name: argocd-gpg-keys-cm
+    name: gpg-keys
+  - emptyDir: {}
+    name: gpg-keyring
+  - name: argocd-repo-server-tls
+    secret:
+      defaultMode: 420
+      items:
+      - key: tls.crt
+        path: tls.crt
+      - key: tls.key
+        path: tls.key
+      - key: ca.crt
+        path: ca.crt
+      optional: true
+      secretName: argocd-repo-server-tls
+  - name: kube-api-access-fngfc
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:47:14Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:50:48Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:50:48Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:47:14Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://fee5670f896dbea633d25147b2ed0261d42703eb31aa1fc639cc4dec9de74610
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-applicationset-controller
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T15:50:45Z"
+  hostIP: 192.168.32.26
+  phase: Running
+  podIP: 172.21.170.207
+  podIPs:
+  - ip: 172.21.170.207
+  qosClass: Burstable
+  startTime: "2024-06-11T15:47:14Z"

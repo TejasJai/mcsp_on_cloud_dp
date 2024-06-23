@@ -1,0 +1,191 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 4189cb846a74215c0a0845536eab5591779cd0b36c55283ed6888367dfabec8e
+    cni.projectcalico.org/podIP: 172.21.153.33/32
+    cni.projectcalico.org/podIPs: 172.21.153.33/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.153.33"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-21T23:01:14Z"
+  generateName: argo-workflow-controller-7c86b97f55-
+  labels:
+    app: workflow-controller
+    app.kubernetes.io/component: workflow-controller
+    app.kubernetes.io/instance: argo-wf-ibmcloud
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: argo-workflows-workflow-controller
+    app.kubernetes.io/part-of: argo-workflows
+    app.kubernetes.io/version: v3.5.8
+    helm.sh/chart: argo-workflows-0.41.11
+    pod-template-hash: 7c86b97f55
+  name: argo-workflow-controller-7c86b97f55-g6sh2
+  namespace: sretools
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: argo-workflow-controller-7c86b97f55
+    uid: 9dbfd4a1-0f95-417a-b723-db0514370041
+  resourceVersion: "205308873"
+  uid: 6ca08670-5d43-43e3-9d08-edafdf630cd3
+spec:
+  containers:
+  - args:
+    - --configmap
+    - argo-workflow-controller-configmap
+    - --executor-image
+    - quay.io/argoproj/argoexec:v3.5.8
+    - --loglevel
+    - info
+    - --gloglevel
+    - "0"
+    - --log-format
+    - text
+    command:
+    - workflow-controller
+    env:
+    - name: ARGO_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: LEADER_ELECTION_IDENTITY
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    image: quay.io/argoproj/workflow-controller:v3.5.8
+    imagePullPolicy: Always
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: 6060
+        scheme: HTTP
+      initialDelaySeconds: 90
+      periodSeconds: 60
+      successThreshold: 1
+      timeoutSeconds: 30
+    name: controller
+    ports:
+    - containerPort: 9090
+      name: metrics
+      protocol: TCP
+    - containerPort: 6060
+      protocol: TCP
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000640000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-wf4ds
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: argo-workflow-controller-dockercfg-6l87g
+  nodeName: 192.168.33.25
+  nodeSelector:
+    kubernetes.io/os: linux
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000640000
+    seLinuxOptions:
+      level: s0:c25,c20
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: argo-workflow-controller
+  serviceAccountName: argo-workflow-controller
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-wf4ds
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T23:01:14Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T23:01:19Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T23:01:19Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T23:01:14Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://a1de6a26aa4c6607205e51cd9cb7e0be7e3c8b01a197b53a02b4f97a65a5b09b
+    image: quay.io/argoproj/workflow-controller:v3.5.8
+    imageID: quay.io/argoproj/workflow-controller@sha256:39cba7d4366413766057a03cb73476a21375ef7a671cdeda357fc17dc9ad7bf4
+    lastState: {}
+    name: controller
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-21T23:01:18Z"
+  hostIP: 192.168.33.25
+  phase: Running
+  podIP: 172.21.153.33
+  podIPs:
+  - ip: 172.21.153.33
+  qosClass: BestEffort
+  startTime: "2024-06-21T23:01:14Z"

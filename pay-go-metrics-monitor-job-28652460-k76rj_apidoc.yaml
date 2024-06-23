@@ -1,0 +1,255 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: c61161be00bd773ec6ca1a429c6d7a4b7b4c85f88b8b71df0ff1c026c07e0072
+    cni.projectcalico.org/podIP: ""
+    cni.projectcalico.org/podIPs: ""
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.4.138"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-23T13:00:00Z"
+  generateName: pay-go-metrics-monitor-job-28652460-
+  labels:
+    batch.kubernetes.io/controller-uid: 0e470326-12cb-4fe7-9d9d-2e999eb5a5b2
+    batch.kubernetes.io/job-name: pay-go-metrics-monitor-job-28652460
+    controller-uid: 0e470326-12cb-4fe7-9d9d-2e999eb5a5b2
+    job-name: pay-go-metrics-monitor-job-28652460
+    workload: pay-go-metrics-monitor
+  name: pay-go-metrics-monitor-job-28652460-k76rj
+  namespace: pay-go-metrics-monitor
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: pay-go-metrics-monitor-job-28652460
+    uid: 0e470326-12cb-4fe7-9d9d-2e999eb5a5b2
+  resourceVersion: "208894490"
+  uid: ab886e6a-e05a-4970-b132-e511734016c7
+spec:
+  containers:
+  - env:
+    - name: USAGE_DB_PWD
+      valueFrom:
+        configMapKeyRef:
+          key: usageDBPassword
+          name: cmm-config
+    - name: USAGE_DB_CONNSTR
+      valueFrom:
+        configMapKeyRef:
+          key: usageDBConnString
+          name: cmm-config
+    - name: PRODUCT_REG_USERNAME
+      valueFrom:
+        secretKeyRef:
+          key: username
+          name: product-reg-apikey
+    - name: PRODUCT_REG_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: product-reg-apikey
+    - name: AWS_MYSQL_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: aws-mysql-secret
+    - name: SEGMENT_WRITE_KEY
+      valueFrom:
+        secretKeyRef:
+          key: apikey
+          name: segment-secret
+    - name: SUBSCRIPTION_MANAGER_ENDPOINT
+      valueFrom:
+        configMapKeyRef:
+          key: subscriptionManagerEndpoint
+          name: cmm-config
+    - name: PRODUCT_REGISTRATION_ENDPOINT
+      valueFrom:
+        configMapKeyRef:
+          key: productRegistrationEndpoint
+          name: cmm-config
+    - name: SC_HOST_ENDPOINT
+      valueFrom:
+        configMapKeyRef:
+          key: scHostEndpoint
+          name: cmm-config
+    - name: SC_API_KEY
+      valueFrom:
+        secretKeyRef:
+          key: apikey
+          name: software-central-secret
+    - name: NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: TLS_CA_CERT
+      value: /mnt/tls/ca
+    - name: TLS_CERT
+      value: /mnt/tls/tls.crt
+    - name: TLS_KEY
+      value: /mnt/tls/tls.key
+    - name: JOB_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    image: icr.io/automation-saas-platform/pay-go-metrics-monitor:20240612062457-main-b43445dde608570ea58f1731aa8147158edc9b83
+    imagePullPolicy: Always
+    name: pay-go-metrics-monitor
+    resources:
+      limits:
+        cpu: 400m
+        memory: 128Mi
+      requests:
+        cpu: 200m
+        memory: 64Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1001210000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/secret-volume
+      name: secret-volume
+      readOnly: true
+    - mountPath: /mnt/tls
+      name: tls
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-w588n
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: pay-go-metrics-monitor-pull-secret
+  nodeName: 192.168.34.30
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: OnFailure
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1001210000
+    seLinuxOptions:
+      level: s0:c35,c10
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: pmm-sa
+  serviceAccountName: pmm-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: secret-volume
+    secret:
+      defaultMode: 420
+      secretName: subscription-mgr-secret
+  - name: tls
+    projected:
+      defaultMode: 420
+      sources:
+      - secret:
+          items:
+          - key: ca.crt
+            path: ca/cmm-ca.crt
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          name: cmm-cert
+      - secret:
+          items:
+          - key: ca.crt
+            path: ca/product-reg-ca.crt
+          name: product-reg-ca-cert
+  - name: kube-api-access-w588n
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-23T13:00:00Z"
+    reason: PodCompleted
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-23T13:00:03Z"
+    reason: PodCompleted
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-23T13:00:03Z"
+    reason: PodCompleted
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-23T13:00:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://92cf71ee448e1ccb5b8a3b09bbc804b14f7914f9dd7950f1166d72bbbd77cfe9
+    image: icr.io/automation-saas-platform/pay-go-metrics-monitor:20240612062457-main-b43445dde608570ea58f1731aa8147158edc9b83
+    imageID: icr.io/automation-saas-platform/pay-go-metrics-monitor@sha256:0abfe57d17def9de225a95c0580e1632abf06212f09779fe009013bc4ada46fc
+    lastState: {}
+    name: pay-go-metrics-monitor
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: cri-o://92cf71ee448e1ccb5b8a3b09bbc804b14f7914f9dd7950f1166d72bbbd77cfe9
+        exitCode: 0
+        finishedAt: "2024-06-23T13:00:02Z"
+        reason: Completed
+        startedAt: "2024-06-23T13:00:02Z"
+  hostIP: 192.168.34.30
+  phase: Succeeded
+  podIP: 172.21.4.138
+  podIPs:
+  - ip: 172.21.4.138
+  qosClass: Burstable
+  startTime: "2024-06-23T13:00:00Z"

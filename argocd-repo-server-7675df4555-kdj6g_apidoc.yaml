@@ -1,0 +1,983 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: d3bf682fe0ecd6bac84538794e8296da55f4fb212855c14021f1d56f2cf3cf06
+    cni.projectcalico.org/podIP: 172.21.133.76/32
+    cni.projectcalico.org/podIPs: 172.21.133.76/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.133.76"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    kubectl.kubernetes.io/restartedAt: "2024-05-07T14:49:47Z"
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-11T14:47:09Z"
+  generateName: argocd-repo-server-7675df4555-
+  labels:
+    app.kubernetes.io/name: argocd-repo-server
+    bcdr-candidate: t
+    by-squad: mcsp-argocd
+    component-name: argocd-resource
+    for-product: all
+    pod-template-hash: 7675df4555
+  name: argocd-repo-server-7675df4555-kdj6g
+  namespace: argocd-worker
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: argocd-repo-server-7675df4555
+    uid: bfc9e769-8f0d-4d13-8239-5e05efee0eb3
+  resourceVersion: "175579151"
+  uid: 941ef42b-eed9-4394-ac9e-5e2372325a5d
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: argocd-repo-server
+          topologyKey: topology.kubernetes.io/zone
+        weight: 100
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: argocd-repo-server
+        topologyKey: kubernetes.io/hostname
+  automountServiceAccountToken: true
+  containers:
+  - args:
+    - /usr/local/bin/argocd-repo-server
+    command:
+    - entrypoint.sh
+    - argocd-repo-server
+    - --redis
+    - argocd-redis-ha-haproxy:6379
+    - --parallelismlimit=10
+    env:
+    - name: ARGOCD_RECONCILIATION_TIMEOUT
+      valueFrom:
+        configMapKeyRef:
+          key: timeout.reconciliation
+          name: argocd-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_LOGFORMAT
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.log.format
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_LOGLEVEL
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.log.level
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_PARALLELISM_LIMIT
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.parallelism.limit
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_LISTEN_ADDRESS
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.listen.address
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_LISTEN_METRICS_ADDRESS
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.metrics.listen.address
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_DISABLE_TLS
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.disable.tls
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_TLS_MIN_VERSION
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.tls.minversion
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_TLS_MAX_VERSION
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.tls.maxversion
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_TLS_CIPHERS
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.tls.ciphers
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_CACHE_EXPIRATION
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.repo.cache.expiration
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: REDIS_SERVER
+      valueFrom:
+        configMapKeyRef:
+          key: redis.server
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: REDIS_COMPRESSION
+      valueFrom:
+        configMapKeyRef:
+          key: redis.compression
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: REDISDB
+      valueFrom:
+        configMapKeyRef:
+          key: redis.db
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_DEFAULT_CACHE_EXPIRATION
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.default.cache.expiration
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_OTLP_ADDRESS
+      valueFrom:
+        configMapKeyRef:
+          key: otlp.address
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_OTLP_INSECURE
+      valueFrom:
+        configMapKeyRef:
+          key: otlp.insecure
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_OTLP_HEADERS
+      valueFrom:
+        configMapKeyRef:
+          key: otlp.headers
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_MAX_COMBINED_DIRECTORY_MANIFESTS_SIZE
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.max.combined.directory.manifests.size
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_PLUGIN_TAR_EXCLUSIONS
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.plugin.tar.exclusions
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_ALLOW_OUT_OF_BOUNDS_SYMLINKS
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.allow.oob.symlinks
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_STREAMED_MANIFEST_MAX_TAR_SIZE
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.streamed.manifest.max.tar.size
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_STREAMED_MANIFEST_MAX_EXTRACTED_SIZE
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.streamed.manifest.max.extracted.size
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_HELM_MANIFEST_MAX_EXTRACTED_SIZE
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.helm.manifest.max.extracted.size
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_REPO_SERVER_DISABLE_HELM_MANIFEST_MAX_EXTRACTED_SIZE
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.disable.helm.manifest.max.extracted.size
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_GIT_MODULES_ENABLED
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.enable.git.submodule
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_GIT_LS_REMOTE_PARALLELISM_LIMIT
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.git.lsremote.parallelism.limit
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_GIT_REQUEST_TIMEOUT
+      valueFrom:
+        configMapKeyRef:
+          key: reposerver.git.request.timeout
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: HELM_CACHE_HOME
+      value: /helm-working-dir
+    - name: HELM_CONFIG_HOME
+      value: /helm-working-dir
+    - name: HELM_DATA_HOME
+      value: /helm-working-dir
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: Always
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz?full=true
+        port: 8084
+        scheme: HTTP
+      initialDelaySeconds: 30
+      periodSeconds: 30
+      successThreshold: 1
+      timeoutSeconds: 5
+    name: argocd-repo-server
+    ports:
+    - containerPort: 8081
+      protocol: TCP
+    - containerPort: 8084
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: 8084
+        scheme: HTTP
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 150m
+        memory: 256Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /app/config/ssh
+      name: ssh-known-hosts
+    - mountPath: /app/config/tls
+      name: tls-certs
+    - mountPath: /app/config/gpg/source
+      name: gpg-keys
+    - mountPath: /app/config/gpg/keys
+      name: gpg-keyring
+    - mountPath: /app/config/reposerver/tls
+      name: argocd-repo-server-tls
+    - mountPath: /tmp
+      name: tmp
+    - mountPath: /helm-working-dir
+      name: helm-working-dir
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  - command:
+    - /var/run/argocd/argocd-cmp-server
+    envFrom:
+    - secretRef:
+        name: argocd-vault-configuration
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: IfNotPresent
+    name: argocd-vault-plugin
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /tmp
+      name: tmp
+    - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+      name: cmp-plugin
+      subPath: argocd-vault-plugin.yaml
+    - mountPath: /usr/local/bin/argocd-vault-plugin
+      name: custom-tools
+      subPath: argocd-vault-plugin
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  - command:
+    - /var/run/argocd/argocd-cmp-server
+    envFrom:
+    - secretRef:
+        name: argocd-vault-configuration
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: IfNotPresent
+    name: argocd-vault-plugin-custom
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /tmp
+      name: tmp
+    - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+      name: cmp-plugin
+      subPath: argocd-vault-plugin-custom.yaml
+    - mountPath: /usr/local/bin/argocd-vault-plugin
+      name: custom-tools
+      subPath: argocd-vault-plugin
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  - command:
+    - /var/run/argocd/argocd-cmp-server
+    env:
+    - name: HELM_CACHE_HOME
+      value: /helm-temp-dir
+    - name: HELM_CONFIG_HOME
+      value: /helm-temp-dir
+    - name: HELM_DATA_HOME
+      value: /helm-temp-dir
+    envFrom:
+    - secretRef:
+        name: argocd-vault-configuration
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: IfNotPresent
+    name: argocd-vault-plugin-helm
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /tmp
+      name: tmp
+    - mountPath: /helm-temp-dir
+      name: helm-temp-dir
+    - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+      name: cmp-plugin
+      subPath: argocd-vault-plugin-helm.yaml
+    - mountPath: /usr/local/bin/argocd-vault-plugin
+      name: custom-tools
+      subPath: argocd-vault-plugin
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  - command:
+    - /var/run/argocd/argocd-cmp-server
+    env:
+    - name: HELM_CACHE_HOME
+      value: /helm-temp-dir
+    - name: HELM_CONFIG_HOME
+      value: /helm-temp-dir
+    - name: HELM_DATA_HOME
+      value: /helm-temp-dir
+    envFrom:
+    - secretRef:
+        name: argocd-vault-configuration
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: IfNotPresent
+    name: argocd-vault-plugin-helm-custom
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /tmp
+      name: tmp
+    - mountPath: /helm-temp-dir
+      name: helm-temp-dir
+    - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+      name: cmp-plugin
+      subPath: argocd-vault-plugin-helm-custom.yaml
+    - mountPath: /usr/local/bin/argocd-vault-plugin
+      name: custom-tools
+      subPath: argocd-vault-plugin
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  - command:
+    - /var/run/argocd/argocd-cmp-server
+    envFrom:
+    - secretRef:
+        name: argocd-vault-configuration
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: IfNotPresent
+    name: argocd-vault-plugin-kustomize
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /tmp
+      name: tmp
+    - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+      name: cmp-plugin
+      subPath: argocd-vault-plugin-kustomize.yaml
+    - mountPath: /usr/local/bin/argocd-vault-plugin
+      name: custom-tools
+      subPath: argocd-vault-plugin
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  - command:
+    - /var/run/argocd/argocd-cmp-server
+    envFrom:
+    - secretRef:
+        name: argocd-vault-configuration
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: IfNotPresent
+    name: argocd-vault-plugin-kustomize-custom
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /tmp
+      name: tmp
+    - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+      name: cmp-plugin
+      subPath: argocd-vault-plugin-kustomize-custom.yaml
+    - mountPath: /usr/local/bin/argocd-vault-plugin
+      name: custom-tools
+      subPath: argocd-vault-plugin
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  - command:
+    - /var/run/argocd/argocd-cmp-server
+    env:
+    - name: HELM_CACHE_HOME
+      value: /helm-temp-dir
+    - name: HELM_CONFIG_HOME
+      value: /helm-temp-dir
+    - name: HELM_DATA_HOME
+      value: /helm-temp-dir
+    envFrom:
+    - secretRef:
+        name: argocd-vault-configuration
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: IfNotPresent
+    name: argocd-vault-plugin-helm-kustomize
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /tmp
+      name: tmp
+    - mountPath: /helm-temp-dir
+      name: helm-temp-dir
+    - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+      name: cmp-plugin
+      subPath: argocd-vault-plugin-helm-kustomize.yaml
+    - mountPath: /usr/local/bin/argocd-vault-plugin
+      name: custom-tools
+      subPath: argocd-vault-plugin
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  - command:
+    - /var/run/argocd/argocd-cmp-server
+    envFrom:
+    - secretRef:
+        name: argocd-vault-configuration
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: IfNotPresent
+    name: argocd-manager-worker-deployment
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /tmp
+      name: tmp
+    - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+      name: cmp-plugin
+      subPath: argocd-manager-worker-deployment.yaml
+    - mountPath: /usr/local/bin/argocd-vault-plugin
+      name: custom-tools
+      subPath: argocd-vault-plugin
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  - command:
+    - /var/run/argocd/argocd-cmp-server
+    envFrom:
+    - secretRef:
+        name: argocd-vault-configuration
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: IfNotPresent
+    name: argocd-vault-plugin-helm-inline
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /tmp
+      name: tmp
+    - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+      name: cmp-plugin
+      subPath: argocd-vault-plugin-helm-inline.yaml
+    - mountPath: /usr/local/bin/argocd-vault-plugin
+      name: custom-tools
+      subPath: argocd-vault-plugin
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: argocd-icr-ips
+  initContainers:
+  - args:
+    - wget -O /custom-tools/argocd-vault-plugin https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v1.17.0/argocd-vault-plugin_1.17.0_linux_amd64
+      && chmod +x /custom-tools/argocd-vault-plugin
+    command:
+    - sh
+    - -c
+    env:
+    - name: AVP_VERSION
+      value: 1.17.0
+    image: icr.io/automation-saas-platform/cicd/alpine:3.19.1
+    imagePullPolicy: Always
+    name: download-tools
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000720000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /custom-tools
+      name: custom-tools
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  - command:
+    - /bin/cp
+    - -n
+    - /usr/local/bin/argocd
+    - /var/run/argocd/argocd-cmp-server
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: IfNotPresent
+    name: copyutil
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4f629
+      readOnly: true
+  nodeName: 192.168.32.23
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000720000
+    seLinuxOptions:
+      level: s0:c27,c9
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: argocd-sa
+  serviceAccountName: argocd-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: cmp-plugin
+    name: cmp-plugin
+  - emptyDir: {}
+    name: custom-tools
+  - emptyDir: {}
+    name: helm-temp-dir
+  - configMap:
+      defaultMode: 420
+      name: argocd-ssh-known-hosts-cm
+    name: ssh-known-hosts
+  - configMap:
+      defaultMode: 420
+      name: argocd-tls-certs-cm
+    name: tls-certs
+  - configMap:
+      defaultMode: 420
+      name: argocd-gpg-keys-cm
+    name: gpg-keys
+  - emptyDir: {}
+    name: gpg-keyring
+  - emptyDir: {}
+    name: tmp
+  - emptyDir: {}
+    name: helm-working-dir
+  - name: argocd-repo-server-tls
+    secret:
+      defaultMode: 420
+      items:
+      - key: tls.crt
+        path: tls.crt
+      - key: tls.key
+        path: tls.key
+      - key: ca.crt
+        path: ca.crt
+      optional: true
+      secretName: argocd-repo-server-tls
+  - emptyDir: {}
+    name: var-files
+  - emptyDir: {}
+    name: plugins
+  - name: kube-api-access-4f629
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T14:47:27Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T14:47:39Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T14:47:39Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T14:47:09Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://bbab9edfa138067109dc26c954006efe33ad55d159e0c7899d57d335e26a20f9
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-manager-worker-deployment
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:47:29Z"
+  - containerID: cri-o://b1db26fefbf5f7855eac3a67434fef77cff7d4477180ccc7c49557dee94d6567
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-repo-server
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:47:28Z"
+  - containerID: cri-o://e13c51a7701d1784c8417acb4a58c576d54cf3d8dfb1bc6d6f49367619e4814d
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-vault-plugin
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:47:28Z"
+  - containerID: cri-o://a687325f253ad172e0049ee1371bf4d8a34a685c00361019b95b5db5c16b60ae
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-vault-plugin-custom
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:47:28Z"
+  - containerID: cri-o://d54a0561a7d2efad8fff5339e375d304bce8eb890635d6f81c3aefd5eb932bcb
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-vault-plugin-helm
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:47:28Z"
+  - containerID: cri-o://eaec9eae269671ccf6ecfd185f6b12ca85cc9d8e8281a7d52dfe8833556cd901
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-vault-plugin-helm-custom
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:47:28Z"
+  - containerID: cri-o://7156e79992ac052a08c0f3b690677fe2cbc956cd9c9934956209d434baae9c18
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-vault-plugin-helm-inline
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:47:29Z"
+  - containerID: cri-o://76943a4f134e84dcebbc5c37c9c22eea9e1a6f82681ded4ebb9cdc47016a5add
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-vault-plugin-helm-kustomize
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:47:29Z"
+  - containerID: cri-o://19f60d144fb71227bbf5154d1ba8903c4cc8aaaf581773a26138afa6daee30e1
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-vault-plugin-kustomize
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:47:29Z"
+  - containerID: cri-o://8bcd4abcaebae79874146a653ff6fdd09ee95fcaf1166d9e97a665a05f17ca9f
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-vault-plugin-kustomize-custom
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:47:29Z"
+  hostIP: 192.168.32.23
+  initContainerStatuses:
+  - containerID: cri-o://f4ddc885140c5e4069c63a32141dd79f1d2133febcfaca87012f0309a6b4c919
+    image: icr.io/automation-saas-platform/cicd/alpine:3.19.1
+    imageID: icr.io/automation-saas-platform/cicd/alpine@sha256:a6bb8cb8c3f68e1c4f9e1e6c1b0d0e924d6f939c344411f0d01926d8b9113276
+    lastState: {}
+    name: download-tools
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: cri-o://f4ddc885140c5e4069c63a32141dd79f1d2133febcfaca87012f0309a6b4c919
+        exitCode: 0
+        finishedAt: "2024-06-11T14:47:26Z"
+        reason: Completed
+        startedAt: "2024-06-11T14:47:25Z"
+  - containerID: cri-o://58208d7f697f9e45ef3180e002e4e60e64bf34fa769363566702a5088e7e336c
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: copyutil
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: cri-o://58208d7f697f9e45ef3180e002e4e60e64bf34fa769363566702a5088e7e336c
+        exitCode: 0
+        finishedAt: "2024-06-11T14:47:26Z"
+        reason: Completed
+        startedAt: "2024-06-11T14:47:26Z"
+  phase: Running
+  podIP: 172.21.133.76
+  podIPs:
+  - ip: 172.21.133.76
+  qosClass: Burstable
+  startTime: "2024-06-11T14:47:09Z"

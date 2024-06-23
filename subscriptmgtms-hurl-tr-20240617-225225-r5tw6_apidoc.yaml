@@ -1,0 +1,232 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 7f85dffb1f8af54fb90d94d6b7c129f05fc3967d53807ff285ed6f47b7af8ad0
+    cni.projectcalico.org/podIP: 172.21.40.118/32
+    cni.projectcalico.org/podIPs: 172.21.40.118/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.40.118"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: bcdr-scc
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-17T22:52:26Z"
+  finalizers:
+  - batch.kubernetes.io/job-tracking
+  generateName: subscriptmgtms-hurl-tr-20240617-225225-
+  labels:
+    batch.kubernetes.io/controller-uid: 7f5c0d51-6b5a-4802-9e65-d6c1bd486512
+    batch.kubernetes.io/job-name: subscriptmgtms-hurl-tr-20240617-225225
+    controller-uid: 7f5c0d51-6b5a-4802-9e65-d6c1bd486512
+    instana-autotrace: "false"
+    job-name: subscriptmgtms-hurl-tr-20240617-225225
+    jobName: subscriptmgtms-hurl-tr-20240617-225225
+    pipelineRun: 17-06-2024_22-52-23
+    testName: subscriptmgtms-hurl-tr
+    trlabel: test-runner
+  name: subscriptmgtms-hurl-tr-20240617-225225-r5tw6
+  namespace: tenant-management
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: subscriptmgtms-hurl-tr-20240617-225225
+    uid: 7f5c0d51-6b5a-4802-9e65-d6c1bd486512
+  resourceVersion: "194300471"
+  uid: fa891f7f-15fc-4163-87cf-5be2bfa6dcc7
+spec:
+  automountServiceAccountToken: true
+  containers:
+  - env:
+    - name: RESULTS_DIR
+      value: /mcsp-cicd/test-runner/results/subscriptmgtms-hurl-tr-20240617-225225
+    - name: TEST_NAME
+      value: subscriptmgtms-hurl-tr
+    envFrom:
+    - secretRef:
+        name: subscriptmgtms-hurl-tr-secret
+        optional: true
+    - secretRef:
+        name: common-secret
+        optional: true
+    - configMapRef:
+        name: subscriptmgtms-hurl-tr-configmap
+        optional: true
+    image: icr.io/automation-saas-platform/tenant_manager_deployment_validation_e2e_hurl:latest
+    imagePullPolicy: Always
+    name: test-container
+    resources:
+      limits:
+        cpu: 500m
+      requests:
+        cpu: 250m
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000960000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /mcsp-cicd/test-runner/results/subscriptmgtms-hurl-tr-20240617-225225
+      name: job-files
+    - mountPath: /dev/shm
+      name: dshm
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-t9894
+      readOnly: true
+    workingDir: /mcsp-cicd/test-runner/results/subscriptmgtms-hurl-tr-20240617-225225
+  - command:
+    - sleep
+    - infinity
+    image: icr.io/continuous-delivery/pipeline/pipeline-base-image:latest
+    imagePullPolicy: IfNotPresent
+    name: export-container
+    resources:
+      limits:
+        cpu: 500m
+      requests:
+        cpu: 250m
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000960000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /mcsp-cicd/test-runner/results/subscriptmgtms-hurl-tr-20240617-225225
+      name: job-files
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-t9894
+      readOnly: true
+    workingDir: /mcsp-cicd/test-runner/results/subscriptmgtms-hurl-tr-20240617-225225
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: subscriptmgtms-global-registry-secret
+  - name: subscriptmgtms-sa-dockercfg-sm7jk
+  nodeName: 192.168.34.35
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000960000
+    seLinuxOptions:
+      level: s0:c31,c15
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: subscriptmgtms-sa
+  serviceAccountName: subscriptmgtms-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - emptyDir: {}
+    name: job-files
+  - emptyDir:
+      medium: Memory
+    name: dshm
+  - name: kube-api-access-t9894
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-17T22:52:26Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-17T23:01:22Z"
+    message: 'containers with unready status: [test-container]'
+    reason: ContainersNotReady
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-17T23:01:22Z"
+    message: 'containers with unready status: [test-container]'
+    reason: ContainersNotReady
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-17T22:52:26Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://0df2b3c06f60feaf4ff3b1908b8e1f491f49241dded17538ce2250686e6c10a1
+    image: icr.io/continuous-delivery/pipeline/pipeline-base-image:latest
+    imageID: icr.io/continuous-delivery/pipeline/pipeline-base-image@sha256:39ec8303cf8c6e46a55203d043aa6f8c6562599b5c42ca2c9cb7d9aafda47bb0
+    lastState: {}
+    name: export-container
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-17T22:52:28Z"
+  - containerID: cri-o://68b2d6bac8edb0d67f73c340f6b1b96bc986807e1e97237a3306a6d7a0536e28
+    image: icr.io/automation-saas-platform/tenant_manager_deployment_validation_e2e_hurl:latest
+    imageID: icr.io/automation-saas-platform/tenant_manager_deployment_validation_e2e_hurl@sha256:a36033f19be0c9d1a7c13c18878e6c7d632ae0a627c86c85d7c68b9e58b50363
+    lastState: {}
+    name: test-container
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: cri-o://68b2d6bac8edb0d67f73c340f6b1b96bc986807e1e97237a3306a6d7a0536e28
+        exitCode: 1
+        finishedAt: "2024-06-17T23:01:22Z"
+        reason: Error
+        startedAt: "2024-06-17T22:52:27Z"
+  hostIP: 192.168.34.35
+  phase: Running
+  podIP: 172.21.40.118
+  podIPs:
+  - ip: 172.21.40.118
+  qosClass: Burstable
+  startTime: "2024-06-17T22:52:26Z"

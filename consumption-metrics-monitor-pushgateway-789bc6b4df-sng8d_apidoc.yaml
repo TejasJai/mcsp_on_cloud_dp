@@ -1,0 +1,186 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 9fc8732cc433838e6f7f0d5e73dc39994fd74030e207de52768bb1a7a804ddd6
+    cni.projectcalico.org/podIP: 172.21.14.206/32
+    cni.projectcalico.org/podIPs: 172.21.14.206/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.14.206"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-11T15:00:45Z"
+  generateName: consumption-metrics-monitor-pushgateway-789bc6b4df-
+  labels:
+    app: consumption-metrics-monitor-pushgateway
+    bcdr-candidate: t
+    component-name: metering
+    pod-template-hash: 789bc6b4df
+  name: consumption-metrics-monitor-pushgateway-789bc6b4df-sng8d
+  namespace: consumption-metrics-monitor
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: consumption-metrics-monitor-pushgateway-789bc6b4df
+    uid: 2a3322ff-6187-45b3-9b26-f027d9bb2c13
+  resourceVersion: "175611812"
+  uid: c2b6af33-973b-4017-95af-7843b54ce6eb
+spec:
+  containers:
+  - args:
+    - --web.config.file=/mnt/config/web.yaml
+    image: prom/pushgateway:v1.7.0
+    imagePullPolicy: Always
+    name: pushgateway
+    ports:
+    - containerPort: 9091
+      name: metrics
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /-/ready
+        port: 9091
+        scheme: HTTPS
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 10
+    resources:
+      limits:
+        cpu: 200m
+        memory: 50Mi
+      requests:
+        cpu: 100m
+        memory: 30Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000980000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /mnt/config
+      name: web-config
+    - mountPath: /mnt/tls
+      name: server-cert
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-r5t5d
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: consumption-metrics-monitor-pull-secret
+  - name: cmm-sa-dockercfg-llwl2
+  nodeName: 192.168.32.24
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000980000
+    seLinuxOptions:
+      level: s0:c31,c25
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: cmm-sa
+  serviceAccountName: cmm-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: cmm-pushgateway-config
+    name: web-config
+  - name: server-cert
+    secret:
+      defaultMode: 420
+      secretName: cmm-pushgateway-server-cert
+  - name: kube-api-access-r5t5d
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:00:45Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:01:05Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:01:05Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:00:45Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://4185b11f2bb97266f20c2f05596803ef8a45fdec82608c60329eeeb8b7a6d444
+    image: docker.io/prom/pushgateway:v1.7.0
+    imageID: docker.io/prom/pushgateway@sha256:a742e7b3c9d7ddf0cc6a3117e35d28d4eafbaa51b7587f18a3e6585c45a89129
+    lastState: {}
+    name: pushgateway
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T15:00:52Z"
+  hostIP: 192.168.32.24
+  phase: Running
+  podIP: 172.21.14.206
+  podIPs:
+  - ip: 172.21.14.206
+  qosClass: Burstable
+  startTime: "2024-06-11T15:00:45Z"

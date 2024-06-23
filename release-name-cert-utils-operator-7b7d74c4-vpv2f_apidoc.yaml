@@ -1,0 +1,228 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 86ccb951ed5ec85842eb1104d073a08d20a91d9538c898403d26005336fb3575
+    cni.projectcalico.org/podIP: 172.21.6.147/32
+    cni.projectcalico.org/podIPs: 172.21.6.147/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.6.147"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-11T13:59:52Z"
+  generateName: release-name-cert-utils-operator-7b7d74c4-
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: cert-utils-operator
+    control-plane: cert-utils-operator
+    pod-template-hash: 7b7d74c4
+  name: release-name-cert-utils-operator-7b7d74c4-vpv2f
+  namespace: cert-utils-operator
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: release-name-cert-utils-operator-7b7d74c4
+    uid: c1436147-c34a-46a3-a7ca-4c165e9333df
+  resourceVersion: "175476162"
+  uid: 8896a4f7-1763-4e0f-90e4-9fb682c7680e
+spec:
+  containers:
+  - args:
+    - --secure-listen-address=0.0.0.0:8443
+    - --upstream=http://127.0.0.1:8080/
+    - --logtostderr=true
+    - --tls-cert-file=/etc/certs/tls/tls.crt
+    - --tls-private-key-file=/etc/certs/tls/tls.key
+    image: quay.io/brancz/kube-rbac-proxy:v0.17.0-amd64
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy
+    ports:
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 100m
+        memory: 20Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000690000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/certs/tls
+      name: cert-utils-operator-certs
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-gqvrz
+      readOnly: true
+  - args:
+    - --leader-elect
+    command:
+    - /manager
+    image: icr.io/cr-controlplane/cert-utils-operator:1.0.0
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: 8081
+        scheme: HTTP
+      initialDelaySeconds: 15
+      periodSeconds: 20
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: cert-utils-operator
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /readyz
+        port: 8081
+        scheme: HTTP
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 20Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000690000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /tmp/k8s-webhook-server/serving-certs
+      name: webhook-server-cert
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-gqvrz
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: controlplane-imagepullsecret
+  - name: controller-manager-dockercfg-5t4fw
+  nodeName: 192.168.33.24
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000690000
+    seLinuxOptions:
+      level: s0:c26,c20
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: controller-manager
+  serviceAccountName: controller-manager
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: cert-utils-operator-certs
+    secret:
+      defaultMode: 420
+      secretName: cert-utils-operator-certs
+  - name: webhook-server-cert
+    secret:
+      defaultMode: 420
+      secretName: webhook-server-cert
+  - name: kube-api-access-gqvrz
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:59:52Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T14:02:22Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T14:02:22Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:59:52Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://b68d53e61d6b40a61579bc73e44772f13c564ecf8a09c327c242e21e8b5c696f
+    image: icr.io/cr-controlplane/cert-utils-operator:1.0.0
+    imageID: icr.io/cr-controlplane/cert-utils-operator@sha256:cd3a7e7a370a7bbf1384e0eb5906fac427221a507c58a6312be12a1fd5b19f28
+    lastState: {}
+    name: cert-utils-operator
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:02:15Z"
+  - containerID: cri-o://20e8db2af917b8fbe5e6f461322681e254c41caa65a1688805c8eff1670f20b6
+    image: quay.io/brancz/kube-rbac-proxy:v0.17.0-amd64
+    imageID: quay.io/brancz/kube-rbac-proxy@sha256:b58367cbec1c010540eb82222c28d219c02818c5c5bf60020252d7a3a5d89def
+    lastState: {}
+    name: kube-rbac-proxy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:01:56Z"
+  hostIP: 192.168.33.24
+  phase: Running
+  podIP: 172.21.6.147
+  podIPs:
+  - ip: 172.21.6.147
+  qosClass: Burstable
+  startTime: "2024-06-11T13:59:52Z"

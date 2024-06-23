@@ -1,0 +1,150 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: e7e968102f184ff519670b4c56b7eb00ebc0b5367999107a2463103dfc1dfdc9
+    cni.projectcalico.org/podIP: 172.21.182.12/32
+    cni.projectcalico.org/podIPs: 172.21.182.12/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.182.12"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-11T13:29:27Z"
+  generateName: csb-bcdr-labels-698d455986-
+  labels:
+    app: csb-bcdr-labels
+    by-squad: mcsp-csb
+    for-product: all
+    pod-template-hash: 698d455986
+  name: csb-bcdr-labels-698d455986-t54m4
+  namespace: common-service-broker
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: csb-bcdr-labels-698d455986
+    uid: 9ab80a67-e76c-47e9-a840-f87cd371744e
+  resourceVersion: "175407354"
+  uid: af192d5b-03eb-4bd3-9a02-fc930e4de960
+spec:
+  containers:
+  - image: icr.io/automation-saas-platform/csb/common-service-broker-bcdr-labels:20231206193853-main-6c043fbc7ce323486ef3ef45bceb9a83a61ba8d5
+    imagePullPolicy: IfNotPresent
+    name: csb-bcdr-labels
+    resources:
+      limits:
+        cpu: 500m
+      requests:
+        cpu: 250m
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsUser: 1000730000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-z8k4p
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: ap-global-registry
+  nodeName: 192.168.33.22
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000730000
+    runAsNonRoot: true
+    seLinuxOptions:
+      level: s0:c27,c14
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: csb
+  serviceAccountName: csb
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: kube-api-access-z8k4p
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:29:27Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:30:01Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:30:01Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:29:27Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://03fbc2bd0fff70bebda3adc264b2cac49e691e80558f9663d348c3a5ca433f31
+    image: icr.io/automation-saas-platform/csb/common-service-broker-bcdr-labels:20231206193853-main-6c043fbc7ce323486ef3ef45bceb9a83a61ba8d5
+    imageID: icr.io/automation-saas-platform/csb/common-service-broker-bcdr-labels@sha256:5600963159ca2b70a278c09372386f631fa8fbf6057977348db81cf98111dcc3
+    lastState: {}
+    name: csb-bcdr-labels
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T13:30:00Z"
+  hostIP: 192.168.33.22
+  phase: Running
+  podIP: 172.21.182.12
+  podIPs:
+  - ip: 172.21.182.12
+  qosClass: Burstable
+  startTime: "2024-06-11T13:29:27Z"

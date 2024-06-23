@@ -1,0 +1,241 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 72f07914be70201b78aec21d285fc38d6405d06042691cc7680ddae44f981c53
+    cni.projectcalico.org/podIP: 172.21.182.25/32
+    cni.projectcalico.org/podIPs: 172.21.182.25/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.182.25"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: ibm-restricted-scc
+    seccomp.security.alpha.kubernetes.io/pod: docker/default
+  creationTimestamp: "2024-06-11T13:44:42Z"
+  generateName: consumption-metrics-backend-77f975dd44-
+  labels:
+    app: consumption-metrics-backend
+    pod-template-hash: 77f975dd44
+  name: consumption-metrics-backend-77f975dd44-g85mp
+  namespace: consumption-metrics-backend
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: consumption-metrics-backend-77f975dd44
+    uid: 50780c68-984e-4bd9-938f-7440b0fc65e9
+  resourceVersion: "175442161"
+  uid: f081a286-e03d-4e67-b77a-85884c2ecc10
+spec:
+  automountServiceAccountToken: true
+  containers:
+  - env:
+    - name: INTERNAL_TLS_CERT
+      value: /mnt/tls-internal/tls.crt
+    - name: INTERNAL_TLS_KEY
+      value: /mnt/tls-internal/tls.key
+    - name: TLS_CA_CERT
+      value: /mnt/tls/ca
+    - name: TLS_CERT
+      value: /mnt/tls/tls.crt
+    - name: TLS_KEY
+      value: /mnt/tls/tls.key
+    - name: AUTH_USERNAME
+      valueFrom:
+        secretKeyRef:
+          key: username
+          name: consumption-metrics-backend-apikey
+    - name: AUTH_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: consumption-metrics-backend-apikey
+    - name: AWS_MYSQL_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: aws-mysql-secret
+    - name: DB_CONN_STRING
+      value: 23602d3fce744e4b8264835695978937:$(AWS_MYSQL_PASSWORD)@tcp(407036c6-295f-4bbd-87f5-d083e124e351.2adb0220806343e3ae11df79c89b377f.databases.appdomain.cloud:31654)/ibmclouddb?parseTime=true&loc=UTC&tls=skip-verify
+    - name: ACCOUNT_IAM_ENDPOINT
+      value: https://account-iam.ibm.us-east.platform.test.saas.ibm.com
+    image: icr.io/automation-saas-platform/consumption-metrics-backend:20240529130238-main-9c95f2678fa50cfb58387e38bbb205b549a763a3
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 1
+      httpGet:
+        path: /healthCheck
+        port: 8080
+        scheme: HTTPS
+      initialDelaySeconds: 5
+      periodSeconds: 300
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: consumption-metrics-backend
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 1
+      httpGet:
+        path: /healthCheck
+        port: 8080
+        scheme: HTTPS
+      initialDelaySeconds: 5
+      periodSeconds: 300
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000941000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /mnt/tls
+      name: tls
+      readOnly: true
+    - mountPath: /mnt/tls-internal
+      name: tls-internal
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-s846q
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: consumption-metrics-backend-pull-secret
+  - name: consumption-metrics-backend-sa-dockercfg-6q2pz
+  nodeName: 192.168.33.22
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1
+    seLinuxOptions:
+      level: s0:c31,c10
+    seccompProfile:
+      type: RuntimeDefault
+    supplementalGroups:
+    - 1
+  serviceAccount: consumption-metrics-backend-sa
+  serviceAccountName: consumption-metrics-backend-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: tls
+    projected:
+      defaultMode: 420
+      sources:
+      - secret:
+          items:
+          - key: ca.crt
+            path: ca/product-reg-ca.crt
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          name: server-cert
+      - secret:
+          items:
+          - key: ca-us-east.crt
+            path: ca/mgmt-console-ca-us-east.crt
+          - key: ca-us-east-v2-console.crt
+            path: ca/mgmt-console-ca-us-east-v2-console.crt
+          name: mgmt-console-ca-cert
+  - name: tls-internal
+    secret:
+      defaultMode: 420
+      secretName: consumption-metrics-backend-tls
+  - name: kube-api-access-s846q
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:44:42Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:46:19Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:46:19Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:44:42Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://f8dc99865a0cffb01290d208718d5ab0f8a86c941d47c5a01eb218e058426eb2
+    image: icr.io/automation-saas-platform/consumption-metrics-backend:20240529130238-main-9c95f2678fa50cfb58387e38bbb205b549a763a3
+    imageID: icr.io/automation-saas-platform/consumption-metrics-backend@sha256:a9faf07ea19f68f9c6c25c7d4fd30c046d3f10536c232fb7f63aa99963b70664
+    lastState: {}
+    name: consumption-metrics-backend
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T13:45:10Z"
+  hostIP: 192.168.33.22
+  phase: Running
+  podIP: 172.21.182.25
+  podIPs:
+  - ip: 172.21.182.25
+  qosClass: Burstable
+  startTime: "2024-06-11T13:44:42Z"

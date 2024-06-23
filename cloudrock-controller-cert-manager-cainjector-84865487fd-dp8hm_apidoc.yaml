@@ -1,0 +1,159 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: f3fed46a1972e6deb191938f96ee5ab94ae360becfdd28d490dcb3b5a00507c0
+    cni.projectcalico.org/podIP: 172.21.7.77/32
+    cni.projectcalico.org/podIPs: 172.21.7.77/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.7.77"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-11T17:18:32Z"
+  generateName: cloudrock-controller-cert-manager-cainjector-84865487fd-
+  labels:
+    app: cainjector
+    app.kubernetes.io/component: cainjector
+    app.kubernetes.io/instance: cloudrock-controller
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: cainjector
+    app.kubernetes.io/version: v1.14.4
+    helm.sh/chart: cert-manager-v1.14.4
+    pod-template-hash: 84865487fd
+  name: cloudrock-controller-cert-manager-cainjector-84865487fd-dp8hm
+  namespace: cert-manager
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: cloudrock-controller-cert-manager-cainjector-84865487fd
+    uid: 12280b2e-27f1-4a2b-9654-a202a861cd81
+  resourceVersion: "175966354"
+  uid: fb8b27bf-47b6-4da9-8576-3c95f87791c1
+spec:
+  containers:
+  - args:
+    - --v=2
+    - --leader-election-namespace=kube-system
+    env:
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    image: quay.io/jetstack/cert-manager-cainjector:v1.14.4
+    imagePullPolicy: IfNotPresent
+    name: cert-manager-cainjector
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsUser: 1000670000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-db8t9
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: false
+  imagePullSecrets:
+  - name: cloudrock-controller-cert-manager-cainjector-dockercfg-8gpbq
+  nodeName: 192.168.34.33
+  nodeSelector:
+    kubernetes.io/os: linux
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000670000
+    runAsNonRoot: true
+    seLinuxOptions:
+      level: s0:c26,c10
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: cloudrock-controller-cert-manager-cainjector
+  serviceAccountName: cloudrock-controller-cert-manager-cainjector
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-db8t9
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:18:32Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:28:06Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:28:06Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:18:32Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://76468c6530083e477d389c1482398dc419c33a49ea0d2705701c45b48277c294
+    image: quay.io/jetstack/cert-manager-cainjector:v1.14.4
+    imageID: quay.io/jetstack/cert-manager-cainjector@sha256:30286297e5b4b71a86759d297a8109c6a1649fdc68d28f618d87edf12a2da417
+    lastState: {}
+    name: cert-manager-cainjector
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T17:28:06Z"
+  hostIP: 192.168.34.33
+  phase: Running
+  podIP: 172.21.7.77
+  podIPs:
+  - ip: 172.21.7.77
+  qosClass: BestEffort
+  startTime: "2024-06-11T17:18:32Z"

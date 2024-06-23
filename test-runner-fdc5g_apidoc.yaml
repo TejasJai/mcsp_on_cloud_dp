@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: abdfdb2203eab744daf9a14aae04a2fab0e2c8306ea8a29f6ec49b398b8b642b
+    cni.projectcalico.org/podIP: ""
+    cni.projectcalico.org/podIPs: ""
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.237.120"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: anyuid
+  creationTimestamp: "2024-06-18T15:10:41Z"
+  generateName: test-runner-
+  labels:
+    batch.kubernetes.io/controller-uid: 59d4e9e3-0374-41d1-8926-2fe2761ae12d
+    batch.kubernetes.io/job-name: test-runner
+    controller-uid: 59d4e9e3-0374-41d1-8926-2fe2761ae12d
+    job-name: test-runner
+  name: test-runner-fdc5g
+  namespace: consumption-metrics-backend
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: test-runner
+    uid: 59d4e9e3-0374-41d1-8926-2fe2761ae12d
+  resourceVersion: "196159771"
+  uid: 4e9884b1-7863-43ba-a5db-26c80764c434
+spec:
+  automountServiceAccountToken: true
+  containers:
+  - envFrom:
+    - secretRef:
+        name: test-runner-secret
+    image: icr.io/automation-saas-platform/cicd/test-runner:stable
+    imagePullPolicy: Always
+    name: test-runner
+    resources:
+      limits:
+        cpu: 500m
+      requests:
+        cpu: 250m
+    securityContext:
+      capabilities:
+        drop:
+        - MKNOD
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-z7xdl
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: consumption-metrics-backend-pull-secret
+  nodeName: 192.168.34.31
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext:
+    seLinuxOptions:
+      level: s0:c31,c10
+  serviceAccount: consumption-metrics-backend-sa
+  serviceAccountName: consumption-metrics-backend-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: kube-api-access-z7xdl
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-18T15:10:41Z"
+    reason: PodCompleted
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-18T15:13:15Z"
+    reason: PodCompleted
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-18T15:13:15Z"
+    reason: PodCompleted
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-18T15:10:41Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://5d7fa0896737a93cf139db7ccc6e645f5698725ba4161a1099354ea5b243c852
+    image: icr.io/automation-saas-platform/cicd/test-runner:stable
+    imageID: icr.io/automation-saas-platform/cicd/test-runner@sha256:ad8ae6ef92cea89565768e4ef4036810dc37f51f776233f15be8d4eb23c0c477
+    lastState: {}
+    name: test-runner
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: cri-o://5d7fa0896737a93cf139db7ccc6e645f5698725ba4161a1099354ea5b243c852
+        exitCode: 0
+        finishedAt: "2024-06-18T15:13:14Z"
+        reason: Completed
+        startedAt: "2024-06-18T15:10:43Z"
+  hostIP: 192.168.34.31
+  phase: Succeeded
+  podIP: 172.21.237.120
+  podIPs:
+  - ip: 172.21.237.120
+  qosClass: Burstable
+  startTime: "2024-06-18T15:10:41Z"

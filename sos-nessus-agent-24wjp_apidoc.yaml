@@ -1,0 +1,174 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    openshift.io/scc: privileged
+  creationTimestamp: "2024-06-11T17:53:04Z"
+  generateName: sos-nessus-agent-
+  labels:
+    app: sos-nessus-agent
+    cname: staging
+    controller-revision-hash: "7957955585"
+    ctype: public
+    name: sos-nessus-agent
+    pod-template-generation: "3"
+    provider: ibm
+    region: us-east
+    resource: sos-nessus-agent
+    resource-type: daemonset
+    scope: a_f54c77c51e9e4f189a7d1de589b2e203
+  name: sos-nessus-agent-24wjp
+  namespace: ibm-services-system
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: sos-nessus-agent
+    uid: c68c3279-2be7-42c1-b888-892ba8929210
+  resourceVersion: "176026900"
+  uid: c4e8f2b8-38bb-441d-9e47-d6df17754397
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - 192.168.32.24
+  containers:
+  - env:
+    - name: MY_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    - name: GROUP
+      value: ARMADA
+    - name: AGENT_KEY
+    - name: CLUSTER_ID
+      value: cmovnl3w0ms7i8itq0hg
+    - name: NESSUS_HOST
+      value: iksnm1.sos.ibm.com
+    - name: NESSUS_PORT
+      value: "8834"
+    - name: REGION
+      value: us-east
+    - name: SCAN_PERFORMANCE_MODE
+      value: high
+    - name: PROCESS_PRIORITY
+      value: normal
+    envFrom:
+    - secretRef:
+        name: nessus-plugins-token
+    image: us.icr.io/armada-csutil/sos-nessus-agent:189-0b6842644d3b0a9d87c34880f3811bc5b114837e
+    imagePullPolicy: Always
+    name: sos-nessus-agent
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1200Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /host
+      name: host
+    - mountPath: /etc/hostname
+      name: hostname
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6xpgk
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostNetwork: true
+  hostPID: true
+  imagePullSecrets:
+  - name: kubeprofiles-registry
+  nodeName: 192.168.32.24
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: nessus-agent
+  serviceAccountName: nessus-agent
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  volumes:
+  - hostPath:
+      path: /
+      type: ""
+    name: host
+  - hostPath:
+      path: /etc/hostname
+      type: File
+    name: hostname
+  - name: kube-api-access-6xpgk
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:53:04Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:53:10Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:53:10Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:53:04Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://ded1c3de6428223b18bed74014cd5c6d771c5c0ceabbfbeb4a8efecf2922d04d
+    image: us.icr.io/armada-csutil/sos-nessus-agent:189-0b6842644d3b0a9d87c34880f3811bc5b114837e
+    imageID: us.icr.io/armada-csutil/sos-nessus-agent@sha256:3a7fb56ef1bcca53192a94b7d87aed70f98ddb57583334490e9ad62c805b2629
+    lastState: {}
+    name: sos-nessus-agent
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T17:53:10Z"
+  hostIP: 192.168.32.24
+  phase: Running
+  podIP: 192.168.32.24
+  podIPs:
+  - ip: 192.168.32.24
+  qosClass: Burstable
+  startTime: "2024-06-11T17:53:04Z"

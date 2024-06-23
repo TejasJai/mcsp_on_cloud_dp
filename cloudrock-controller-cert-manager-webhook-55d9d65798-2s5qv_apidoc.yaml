@@ -1,0 +1,191 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 6a2b63d7efae41ac160f28beea25a80add7661e76c96abc12fc18c563991f825
+    cni.projectcalico.org/podIP: 172.21.153.56/32
+    cni.projectcalico.org/podIPs: 172.21.153.56/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.153.56"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-11T17:18:37Z"
+  generateName: cloudrock-controller-cert-manager-webhook-55d9d65798-
+  labels:
+    app: webhook
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/instance: cloudrock-controller
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: webhook
+    app.kubernetes.io/version: v1.14.4
+    helm.sh/chart: cert-manager-v1.14.4
+    pod-template-hash: 55d9d65798
+  name: cloudrock-controller-cert-manager-webhook-55d9d65798-2s5qv
+  namespace: cert-manager
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: cloudrock-controller-cert-manager-webhook-55d9d65798
+    uid: 0f792b97-090c-4c91-ad74-59cce003c7a4
+  resourceVersion: "175943124"
+  uid: b9c59d7c-1661-4de4-957c-65d20af10c89
+spec:
+  containers:
+  - args:
+    - --v=2
+    - --secure-port=10250
+    - --dynamic-serving-ca-secret-namespace=$(POD_NAMESPACE)
+    - --dynamic-serving-ca-secret-name=cloudrock-controller-cert-manager-webhook-ca
+    - --dynamic-serving-dns-names=cloudrock-controller-cert-manager-webhook
+    - --dynamic-serving-dns-names=cloudrock-controller-cert-manager-webhook.$(POD_NAMESPACE)
+    - --dynamic-serving-dns-names=cloudrock-controller-cert-manager-webhook.$(POD_NAMESPACE).svc
+    env:
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    image: quay.io/jetstack/cert-manager-webhook:v1.14.4
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /livez
+        port: 6080
+        scheme: HTTP
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: cert-manager-webhook
+    ports:
+    - containerPort: 10250
+      name: https
+      protocol: TCP
+    - containerPort: 6080
+      name: healthcheck
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: 6080
+        scheme: HTTP
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsUser: 1000670000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-cxqbs
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: false
+  imagePullSecrets:
+  - name: cloudrock-controller-cert-manager-webhook-dockercfg-bw859
+  nodeName: 192.168.33.25
+  nodeSelector:
+    kubernetes.io/os: linux
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000670000
+    runAsNonRoot: true
+    seLinuxOptions:
+      level: s0:c26,c10
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: cloudrock-controller-cert-manager-webhook
+  serviceAccountName: cloudrock-controller-cert-manager-webhook
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-cxqbs
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:18:37Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:18:58Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:18:58Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:18:37Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://22f72654777606eb92c347a022cd2735cff9de90fb04e5c142a4a8adc221565f
+    image: quay.io/jetstack/cert-manager-webhook:v1.14.4
+    imageID: quay.io/jetstack/cert-manager-webhook@sha256:11f7e7c462da3c0329e0a1e695a7bd37d6b3c28312d4edd4cc8d36f70ecbfa63
+    lastState: {}
+    name: cert-manager-webhook
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T17:18:51Z"
+  hostIP: 192.168.33.25
+  phase: Running
+  podIP: 172.21.153.56
+  podIPs:
+  - ip: 172.21.153.56
+  qosClass: BestEffort
+  startTime: "2024-06-11T17:18:37Z"

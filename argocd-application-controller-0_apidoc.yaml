@@ -1,0 +1,398 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 2ecb511bcc638b6b11d484c19721d35ce2969ddff0fd0f2732b76edc30121b31
+    cni.projectcalico.org/podIP: 172.21.126.209/32
+    cni.projectcalico.org/podIPs: 172.21.126.209/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.126.209"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    kubectl.kubernetes.io/restartedAt: "2024-04-18T15:56:28Z"
+    openshift.io/scc: bcdr-scc
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-11T14:15:10Z"
+  generateName: argocd-application-controller-
+  labels:
+    app.kubernetes.io/name: argocd-application-controller
+    bcdr-candidate: t
+    by-squad: mcsp-argocd
+    component-name: argocd-resource
+    controller-revision-hash: argocd-application-controller-8d8988cdc
+    for-product: all
+    statefulset.kubernetes.io/pod-name: argocd-application-controller-0
+  name: argocd-application-controller-0
+  namespace: argocd-worker
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: StatefulSet
+    name: argocd-application-controller
+    uid: efc5cfc2-8ba2-4cd0-8e24-143d84bc94ed
+  resourceVersion: "175511261"
+  uid: cd231e02-c345-468a-90b9-1e632002fd25
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: argocd-application-controller
+          topologyKey: kubernetes.io/hostname
+        weight: 100
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: argocd
+          topologyKey: kubernetes.io/hostname
+        weight: 5
+  containers:
+  - args:
+    - /usr/local/bin/argocd-application-controller
+    command:
+    - argocd-application-controller
+    - --status-processors
+    - "20"
+    - --operation-processors
+    - "10"
+    - --redis
+    - argocd-redis-ha-haproxy:6379
+    - --repo-server-timeout-seconds
+    - "180"
+    - --kubectl-parallelism-limit=10
+    env:
+    - name: ARGOCD_CONTROLLER_REPLICAS
+      value: "3"
+    - name: ARGOCD_RECONCILIATION_TIMEOUT
+      valueFrom:
+        configMapKeyRef:
+          key: timeout.reconciliation
+          name: argocd-cm
+          optional: true
+    - name: ARGOCD_HARD_RECONCILIATION_TIMEOUT
+      valueFrom:
+        configMapKeyRef:
+          key: timeout.hard.reconciliation
+          name: argocd-cm
+          optional: true
+    - name: ARGOCD_RECONCILIATION_JITTER
+      valueFrom:
+        configMapKeyRef:
+          key: timeout.reconciliation.jitter
+          name: argocd-cm
+          optional: true
+    - name: ARGOCD_REPO_ERROR_GRACE_PERIOD_SECONDS
+      valueFrom:
+        configMapKeyRef:
+          key: controller.repo.error.grace.period.seconds
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_REPO_SERVER
+      valueFrom:
+        configMapKeyRef:
+          key: repo.server
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_REPO_SERVER_TIMEOUT_SECONDS
+      valueFrom:
+        configMapKeyRef:
+          key: controller.repo.server.timeout.seconds
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_STATUS_PROCESSORS
+      valueFrom:
+        configMapKeyRef:
+          key: controller.status.processors
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_OPERATION_PROCESSORS
+      valueFrom:
+        configMapKeyRef:
+          key: controller.operation.processors
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_LOGFORMAT
+      valueFrom:
+        configMapKeyRef:
+          key: controller.log.format
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_LOGLEVEL
+      valueFrom:
+        configMapKeyRef:
+          key: controller.log.level
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_METRICS_CACHE_EXPIRATION
+      valueFrom:
+        configMapKeyRef:
+          key: controller.metrics.cache.expiration
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_SELF_HEAL_TIMEOUT_SECONDS
+      valueFrom:
+        configMapKeyRef:
+          key: controller.self.heal.timeout.seconds
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_REPO_SERVER_PLAINTEXT
+      valueFrom:
+        configMapKeyRef:
+          key: controller.repo.server.plaintext
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_REPO_SERVER_STRICT_TLS
+      valueFrom:
+        configMapKeyRef:
+          key: controller.repo.server.strict.tls
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_PERSIST_RESOURCE_HEALTH
+      valueFrom:
+        configMapKeyRef:
+          key: controller.resource.health.persist
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APP_STATE_CACHE_EXPIRATION
+      valueFrom:
+        configMapKeyRef:
+          key: controller.app.state.cache.expiration
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: REDIS_SERVER
+      valueFrom:
+        configMapKeyRef:
+          key: redis.server
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: REDIS_COMPRESSION
+      valueFrom:
+        configMapKeyRef:
+          key: redis.compression
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: REDISDB
+      valueFrom:
+        configMapKeyRef:
+          key: redis.db
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_DEFAULT_CACHE_EXPIRATION
+      valueFrom:
+        configMapKeyRef:
+          key: controller.default.cache.expiration
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_OTLP_ADDRESS
+      valueFrom:
+        configMapKeyRef:
+          key: otlp.address
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_OTLP_INSECURE
+      valueFrom:
+        configMapKeyRef:
+          key: otlp.insecure
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_OTLP_HEADERS
+      valueFrom:
+        configMapKeyRef:
+          key: otlp.headers
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_NAMESPACES
+      valueFrom:
+        configMapKeyRef:
+          key: application.namespaces
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_CONTROLLER_SHARDING_ALGORITHM
+      valueFrom:
+        configMapKeyRef:
+          key: controller.sharding.algorithm
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_KUBECTL_PARALLELISM_LIMIT
+      valueFrom:
+        configMapKeyRef:
+          key: controller.kubectl.parallelism.limit
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_K8SCLIENT_RETRY_MAX
+      valueFrom:
+        configMapKeyRef:
+          key: controller.k8sclient.retry.max
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_K8SCLIENT_RETRY_BASE_BACKOFF
+      valueFrom:
+        configMapKeyRef:
+          key: controller.k8sclient.retry.base.backoff
+          name: argocd-cmd-params-cm
+          optional: true
+    - name: ARGOCD_APPLICATION_CONTROLLER_SERVER_SIDE_DIFF
+      valueFrom:
+        configMapKeyRef:
+          key: controller.diff.server.side
+          name: argocd-cmd-params-cm
+          optional: true
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imagePullPolicy: Always
+    name: argocd-application-controller
+    ports:
+    - containerPort: 8082
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: 8082
+        scheme: HTTP
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: "4"
+        memory: 6Gi
+      requests:
+        cpu: "1"
+        memory: 6Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000720000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /app/config/controller/tls
+      name: argocd-repo-server-tls
+    - mountPath: /home/argocd
+      name: argocd-home
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-xhsmc
+      readOnly: true
+    workingDir: /home/argocd
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostname: argocd-application-controller-0
+  imagePullSecrets:
+  - name: argocd-icr-ips
+  nodeName: 192.168.34.29
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000720000
+    seLinuxOptions:
+      level: s0:c27,c9
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: argocd-application-controller
+  serviceAccountName: argocd-application-controller
+  subdomain: argocd-application-controller
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - emptyDir: {}
+    name: argocd-home
+  - name: argocd-repo-server-tls
+    secret:
+      defaultMode: 420
+      items:
+      - key: tls.crt
+        path: tls.crt
+      - key: tls.key
+        path: tls.key
+      - key: ca.crt
+        path: ca.crt
+      optional: true
+      secretName: argocd-repo-server-tls
+  - name: kube-api-access-xhsmc
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T14:15:10Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T14:18:51Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T14:18:51Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T14:15:10Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://8d99f0cac339994c67b872b94d73f203100b674389fae25fcd8624c5caabd8ef
+    image: icr.io/automation-saas-platform/cicd/argo-cd:20240507163154-main-c723a5a2b64a7f60bd5e635509e6fd50456fd7f0
+    imageID: icr.io/automation-saas-platform/cicd/argo-cd@sha256:3fa390157bc0adbaad25680a4eddd11c27bed55a39c5e0570f41289e681fcf61
+    lastState: {}
+    name: argocd-application-controller
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T14:18:38Z"
+  hostIP: 192.168.34.29
+  phase: Running
+  podIP: 172.21.126.209
+  podIPs:
+  - ip: 172.21.126.209
+  qosClass: Burstable
+  startTime: "2024-06-11T14:15:10Z"

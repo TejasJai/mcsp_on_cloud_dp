@@ -1,0 +1,253 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 2664afe1e04e8877bfe2df0d1bd7aed5774b24cf1be40dafc412da60257d7730
+    cni.projectcalico.org/podIP: 172.21.71.202/32
+    cni.projectcalico.org/podIPs: 172.21.71.202/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.71.202"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-11T17:33:43Z"
+  generateName: cloudrock-controller-66d99d67d9-
+  labels:
+    app: cloudrock-controller
+    by-squad: mcsp-controlplane
+    for-product: all
+    pod-template-hash: 66d99d67d9
+  name: cloudrock-controller-66d99d67d9-vcgr2
+  namespace: cloudrock-controller
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: cloudrock-controller-66d99d67d9
+    uid: 71f690fb-f7b9-4a35-a220-e18463e2250d
+  resourceVersion: "175980613"
+  uid: 25b2f1c3-79cd-4f02-a9e2-df8ec6afc5a5
+spec:
+  automountServiceAccountToken: true
+  containers:
+  - env:
+    - name: CONTROLLER_POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: CONTROLLER_POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: CONTROLLER_POD_UID
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.uid
+    - name: AWS_REGION
+      value: us-east-1
+    - name: OPERATOR_NAME
+      value: cloudrock-controller
+    - name: ROSA_TOKEN_PATH
+      value: /secrets/rosatoken
+    - name: CR_CFG_FILEPATH
+      value: /config/embed/config.yaml
+    - name: ENABLE_WEBHOOKS
+      value: "true"
+    - name: SLACK_BOT_TOKEN_PATH
+      value: /secrets/slackbottoken
+    - name: SLACK_CHANNEL_ID_PATH
+      value: /secrets/slackchannelid
+    - name: PULL_SECRET_PATH
+      value: /secrets/pullsecret
+    image: icr.io/cr-controlplane-release/cloudrock-controller:1.10.8-amd64
+    imagePullPolicy: Always
+    livenessProbe:
+      failureThreshold: 5
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      tcpSocket:
+        port: 8081
+      timeoutSeconds: 5
+    name: cloudrock-controller
+    ports:
+    - containerPort: 9443
+      name: webhook-server
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 5
+      initialDelaySeconds: 12
+      periodSeconds: 10
+      successThreshold: 1
+      tcpSocket:
+        port: 8081
+      timeoutSeconds: 6
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 500Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000680000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /secrets
+      mountPropagation: None
+      name: cloudrock-controller-secrets
+      readOnly: true
+    - mountPath: /tmp/k8s-webhook-server/serving-certs
+      mountPropagation: None
+      name: cert
+      readOnly: true
+    - mountPath: /.aws
+      mountPropagation: None
+      name: aws-credential
+    - mountPath: /.config
+      mountPropagation: None
+      name: ocm
+    - mountPath: /tokens
+      mountPropagation: None
+      name: admin-tokens
+    - mountPath: /config/embed
+      mountPropagation: None
+      name: cloudrock-controller-config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4729v
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: controlplane-imagepullsecret
+  - name: cloudrock-controller-dockercfg-8vl92
+  nodeName: 192.168.34.34
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000680000
+    runAsNonRoot: true
+    seLinuxOptions:
+      level: s0:c26,c15
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: cloudrock-controller
+  serviceAccountName: cloudrock-controller
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: cert
+    secret:
+      defaultMode: 420
+      optional: false
+      secretName: webhook-server-cert
+  - name: cloudrock-controller-secrets
+    secret:
+      defaultMode: 420
+      optional: false
+      secretName: cloudrock-controller-secrets
+  - emptyDir:
+      sizeLimit: 1Mi
+    name: aws-credential
+  - emptyDir:
+      sizeLimit: 1Mi
+    name: ocm
+  - emptyDir:
+      sizeLimit: 1Mi
+    name: admin-tokens
+  - configMap:
+      defaultMode: 420
+      name: cloudrock-controller-config
+      optional: false
+    name: cloudrock-controller-config
+  - name: kube-api-access-4729v
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:33:43Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:34:04Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:34:04Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T17:33:43Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://83b9e14f93bd8f0582a74fa1433222979edace1bfbb53618265a4c6f53cb77ee
+    image: icr.io/cr-controlplane-release/cloudrock-controller:1.10.8-amd64
+    imageID: icr.io/cr-controlplane-release/cloudrock-controller@sha256:f66ffdfafd068d665d26d991ed69a59ec4e77e0f58d1a0649b8d092d8364427c
+    lastState: {}
+    name: cloudrock-controller
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T17:33:51Z"
+  hostIP: 192.168.34.34
+  phase: Running
+  podIP: 172.21.71.202
+  podIPs:
+  - ip: 172.21.71.202
+  qosClass: Burstable
+  startTime: "2024-06-11T17:33:43Z"

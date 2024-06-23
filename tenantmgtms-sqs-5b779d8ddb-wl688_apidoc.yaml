@@ -1,0 +1,276 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: e4966a5d3c0eda4b04814e7c4ac365ac61f9dabe1dac3f0a16d1ce875b698037
+    cni.projectcalico.org/podIP: 172.21.172.43/32
+    cni.projectcalico.org/podIPs: 172.21.172.43/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.172.43"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    libertyOperator: WebSphere Liberty
+    openshift.io/scc: restricted-v2
+    productChargedContainers: app
+    productID: e7daacc46bbe4e2dacd2af49145a4723
+    productMetric: PROCESSOR_VALUE_UNIT
+    productName: IBM WebSphere Application Server
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-21T22:51:43Z"
+  generateName: tenantmgtms-sqs-5b779d8ddb-
+  labels:
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/instance: tenantmgtms-sqs
+    app.kubernetes.io/managed-by: websphere-liberty-operator
+    app.kubernetes.io/name: tenantmgtms-sqs
+    app.kubernetes.io/part-of: tenantmgtms-sqs
+    bcdr-candidate: t
+    by-squad: mcsp-instance-management
+    component-name: tenant-management
+    for-product: all
+    liberty.websphere.ibm.com/name: tenantmgtms-sqs
+    name: tenantmgtms-sqs
+    pod-template-hash: 5b779d8ddb
+  name: tenantmgtms-sqs-5b779d8ddb-wl688
+  namespace: tenant-management
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: tenantmgtms-sqs-5b779d8ddb
+    uid: 97d89fae-1995-4caf-8db3-96086aea033d
+  resourceVersion: "205290177"
+  uid: b266b27c-aa17-4b70-a373-ce1dde64fb0d
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: tenantmgtms-sqs
+          topologyKey: topology.kubernetes.io/zone
+        weight: 50
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: tenantmgtms-sqs
+          topologyKey: kubernetes.io/hostname
+        weight: 50
+  automountServiceAccountToken: true
+  containers:
+  - env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    - name: POD_IMAGE_NAME
+      value: icr.io/automation-saas-platform/tenant-management/tenantmgt:20240621002639-main-9ee724819c6a28f6da8cbf10d32cd33f15c1da0d
+    - name: TLS_DIR
+      value: /etc/x509/certs
+    - name: SA_RESOURCE_VERSION
+      value: "112163693"
+    - name: WLP_LOGGING_CONSOLE_LOGLEVEL
+      value: info
+    - name: WLP_LOGGING_CONSOLE_SOURCE
+      value: message,accessLog,ffdc,audit
+    - name: WLP_LOGGING_CONSOLE_FORMAT
+      value: json
+    - name: SEC_IMPORT_K8S_CERTS
+      value: "true"
+    - name: SERVICE_CERT_SECRET_RESOURCE_VERSION
+      value: "112163726"
+    envFrom:
+    - configMapRef:
+        name: tenantmgtms-sqs-env-configmap-staging
+    image: icr.io/automation-saas-platform/tenant-management/tenantmgt:20240621002639-main-9ee724819c6a28f6da8cbf10d32cd33f15c1da0d
+    imagePullPolicy: Always
+    name: app
+    ports:
+    - containerPort: 9443
+      name: 9443-tcp
+      protocol: TCP
+    resources:
+      limits:
+        cpu: 1500m
+        memory: 1500Mi
+      requests:
+        cpu: 500m
+        memory: 1000Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: false
+      runAsNonRoot: true
+      runAsUser: 1000960000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/tokens
+      name: tenantmgtms-token
+    - mountPath: /config/variables/oidc
+      name: tenantmgtms-oidc
+      readOnly: true
+    - mountPath: /config/variables/okd
+      name: tenantmgtms-okd
+      readOnly: true
+    - mountPath: /config/variables
+      name: tenantmgtms-mpconfig
+      readOnly: true
+    - mountPath: /etc/x509/certs
+      name: svc-certificate
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-p6gjs
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: tenantmgtms-global-registry-secret
+  - name: tenantmgtms-sqs-dockercfg-rrd7r
+  nodeName: 192.168.33.26
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000960000
+    seLinuxOptions:
+      level: s0:c31,c15
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: tenantmgtms-sqs
+  serviceAccountName: tenantmgtms-sqs
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  topologySpreadConstraints:
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/instance: tenantmgtms-sqs
+    maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/instance: tenantmgtms-sqs
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+  volumes:
+  - name: tenantmgtms-token
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          audience: openshift
+          expirationSeconds: 7200
+          path: tenantmgtms-token
+  - name: tenantmgtms-oidc
+    secret:
+      defaultMode: 420
+      secretName: tenantmgtms-oidc-client-auth
+  - name: tenantmgtms-okd
+    secret:
+      defaultMode: 420
+      secretName: tenantmgtms-okd-auth
+  - name: tenantmgtms-mpconfig
+    secret:
+      defaultMode: 420
+      secretName: tenantmgtms-mpconfig-secrets
+  - name: svc-certificate
+    secret:
+      defaultMode: 420
+      secretName: tenantmgtms-sqs-svc-tls-cm
+  - name: kube-api-access-p6gjs
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:51:43Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:51:51Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:51:51Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-21T22:51:43Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://febccf246f63cb3aeecd4a101b78f3842d26242c8796b44628692903290c256c
+    image: icr.io/automation-saas-platform/tenant-management/tenantmgt:20240621002639-main-9ee724819c6a28f6da8cbf10d32cd33f15c1da0d
+    imageID: icr.io/automation-saas-platform/tenant-management/tenantmgt@sha256:da774b440d38b0ff304a36c3290b7e4b0a87a119bc8b0dc109a1489dc53926f8
+    lastState: {}
+    name: app
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-21T22:51:51Z"
+  hostIP: 192.168.33.26
+  phase: Running
+  podIP: 172.21.172.43
+  podIPs:
+  - ip: 172.21.172.43
+  qosClass: Burstable
+  startTime: "2024-06-21T22:51:43Z"

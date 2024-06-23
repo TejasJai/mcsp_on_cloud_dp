@@ -1,0 +1,238 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 6c25e66039b82cd684528523f41733a1c4c7a0ffc38ecf3b5386b6b700b2e735
+    cni.projectcalico.org/podIP: 172.21.137.13/32
+    cni.projectcalico.org/podIPs: 172.21.137.13/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.137.13"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: anyuid
+  creationTimestamp: "2024-06-19T13:48:44Z"
+  generateName: product-reg-backend-757c75594c-
+  labels:
+    app: product-reg-backend
+    pod-template-hash: 757c75594c
+  name: product-reg-backend-757c75594c-628bn
+  namespace: product-registration
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: product-reg-backend-757c75594c
+    uid: b6c0e395-49ba-498b-a8f0-fbf9c428fe49
+  resourceVersion: "198766837"
+  uid: 692db462-4ba3-4e78-8744-f1210487826c
+spec:
+  automountServiceAccountToken: true
+  containers:
+  - env:
+    - name: INTERNAL_TLS_CERT
+      value: /mnt/tls-internal/tls.crt
+    - name: INTERNAL_TLS_KEY
+      value: /mnt/tls-internal/tls.key
+    - name: TLS_CA_CERT
+      value: /mnt/tls/ca
+    - name: TLS_CERT
+      value: /mnt/tls/tls.crt
+    - name: TLS_KEY
+      value: /mnt/tls/tls.key
+    - name: ENVIRONMENT
+      value: staging
+    - name: REGION
+      value: us-east
+    - name: AUTH_USERNAME
+      valueFrom:
+        secretKeyRef:
+          key: username
+          name: product-registration-apikey
+    - name: AUTH_NEW_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: new_password
+          name: product-registration-apikey
+    image: icr.io/automation-saas-platform/product-registration-backend:20240606214543-main-1d7f7dc269a31e1243279e98117679fee22ddb55
+    imagePullPolicy: Always
+    livenessProbe:
+      failureThreshold: 1
+      httpGet:
+        path: /v2/healthcheck
+        port: 8080
+        scheme: HTTPS
+      initialDelaySeconds: 5
+      periodSeconds: 300
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: product-reg-backend
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 1
+      httpGet:
+        path: /v2/healthcheck
+        port: 8080
+        scheme: HTTPS
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi
+    securityContext:
+      capabilities:
+        drop:
+        - MKNOD
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /mnt/tls
+      name: tls
+      readOnly: true
+    - mountPath: /mnt/tls-internal
+      name: tls-internal
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-s9tsk
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: product-registration-pull-secret
+  - name: product-registration-sa-dockercfg-j4qhh
+  nodeName: 192.168.33.28
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    seLinuxOptions:
+      level: s0:c31,c0
+  serviceAccount: product-registration-sa
+  serviceAccountName: product-registration-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: tls
+    projected:
+      defaultMode: 420
+      sources:
+      - secret:
+          items:
+          - key: ca.crt
+            path: ca/product-reg-ca.crt
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          name: server-cert
+      - secret:
+          items:
+          - key: ca-us-east.crt
+            path: ca/mgmt-console-ca-us-east.crt
+          - key: ca-us-east-v2-console.crt
+            path: ca/mgmt-console-ca-us-east-v2-console.crt
+          name: mgmt-console-ca-cert
+      - secret:
+          items:
+          - key: ca.crt
+            path: ca/cmm-ca.crt
+          name: cmm-ca-cert
+      - secret:
+          items:
+          - key: ca.crt
+            path: ca/cmm-paygo-ca.crt
+          name: cmm-pay-go-ca-cert
+      - secret:
+          items:
+          - key: ca.crt
+            path: ca/tenant-mgmt-ca.crt
+          name: tenant-mgmt-ca-cert
+  - name: tls-internal
+    secret:
+      defaultMode: 420
+      secretName: product-reg-backend-tls
+  - name: kube-api-access-s9tsk
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-19T13:48:44Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-19T13:49:04Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-19T13:49:04Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-19T13:48:44Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://ef670b4bae85034355b2705e46fee14083730c1702d4917383ce7ef3a91bd9c9
+    image: icr.io/automation-saas-platform/product-registration-backend:20240606214543-main-1d7f7dc269a31e1243279e98117679fee22ddb55
+    imageID: icr.io/automation-saas-platform/product-registration-backend@sha256:b1450187f874200e94eb383cbec749c268bc63dc2432688d18fa7311aaf1281d
+    lastState: {}
+    name: product-reg-backend
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-19T13:48:59Z"
+  hostIP: 192.168.33.28
+  phase: Running
+  podIP: 172.21.137.13
+  podIPs:
+  - ip: 172.21.137.13
+  qosClass: Burstable
+  startTime: "2024-06-19T13:48:44Z"

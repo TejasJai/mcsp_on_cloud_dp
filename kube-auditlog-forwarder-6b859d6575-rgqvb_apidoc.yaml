@@ -1,0 +1,228 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: e19640ddf4911b13e3736886403f245e5bd51250f2d459b868526fc38a73b6a7
+    cni.projectcalico.org/podIP: 172.21.237.81/32
+    cni.projectcalico.org/podIPs: 172.21.237.81/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.237.81"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: privileged
+    prometheus.io/port: "9095"
+    prometheus.io/scrape: "true"
+  creationTimestamp: "2024-06-18T07:41:54Z"
+  generateName: kube-auditlog-forwarder-6b859d6575-
+  labels:
+    app: kube-auditlog-forwarder
+    name: kube-auditlog-forwarder
+    pod-template-hash: 6b859d6575
+  name: kube-auditlog-forwarder-6b859d6575-rgqvb
+  namespace: ibm-services-system
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: kube-auditlog-forwarder-6b859d6575
+    uid: 31c8716c-3428-40c0-81f0-e2cbfaa83636
+  resourceVersion: "195296767"
+  uid: 09968e60-317c-4aa5-83db-00668aa2a5c6
+spec:
+  containers:
+  - env:
+    - name: EXCLUDE_JSON_PATHS
+      value: '{ "exclude_paths": [ {"stage" : "RequestReceived"}, {"requestURI": "/api/v1/namespaces/kube-system[.]*",
+        "_is_regex" : "1" }, {"user.username": "system::node[.]*", "_is_regex" : "1"
+        }]}'
+    - name: IMAGE_TAG
+      value: 324-01cc14e8b0afa6f46d4729eb3a5ada5686b1e840
+    - name: DLC_ENABLED
+      value: "false"
+    - name: CRN_BASE
+      value: crn:v1:staging:public:mcsp-ibm-cloud
+    envFrom:
+    - configMapRef:
+        name: crn-info-services
+    - configMapRef:
+        name: kube-auditlog-forwarder
+    image: us.icr.io/armada-csutil/ibm-kube-profile-auditlog-syslogforwarder:324-01cc14e8b0afa6f46d4729eb3a5ada5686b1e840
+    imagePullPolicy: Always
+    livenessProbe:
+      failureThreshold: 10
+      httpGet:
+        path: /active
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 60
+      periodSeconds: 60
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: kube-auditlog-forwarder
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    - containerPort: 9095
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /health
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 64Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/log
+      name: auditloglocation
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-tg9b7
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: kubeprofiles-registry
+  initContainers:
+  - command:
+    - sh
+    - -c
+    - if [ "$DLC_ENABLED" = true ]; then while echo "Q" | openssl s_client -connect
+      ${DLC_SERVICE_SERVICE_HOST}:${DLC_SERVICE_SERVICE_PORT} -showcerts | sed -n
+      "/^-----BEGIN CERTIFICATE-----$/,/^-----END CERTIFICATE-----$/p" > /tmp/dlc-public_cert.pem;
+      ! [ -s /tmp/dlc-public_cert.pem  ]; do sleep 10; done; else echo "DLC is disabled";
+      fi
+    env:
+    - name: DLC_ENABLED
+      value: "false"
+    image: us.icr.io/armada-csutil/ibm-kube-profile-auditlog-syslogforwarder:324-01cc14e8b0afa6f46d4729eb3a5ada5686b1e840
+    imagePullPolicy: IfNotPresent
+    name: dlc-init
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-tg9b7
+      readOnly: true
+  nodeName: 192.168.34.31
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    runAsUser: 0
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: dedicated
+    operator: Equal
+    value: armada
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - emptyDir: {}
+    name: auditloglocation
+  - name: kube-api-access-tg9b7
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-18T07:42:14Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-18T07:42:54Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-18T07:42:54Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-18T07:41:54Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://aa2982f2348746b0c2c4c9931911bc16dddc40bd720ded859dc5a4a83a67de91
+    image: us.icr.io/armada-csutil/ibm-kube-profile-auditlog-syslogforwarder:324-01cc14e8b0afa6f46d4729eb3a5ada5686b1e840
+    imageID: us.icr.io/armada-csutil/ibm-kube-profile-auditlog-syslogforwarder@sha256:83b8ddca3aa6cdab9b6dd0460b639966f2b523bb6784bea4e85549ccdce21f73
+    lastState: {}
+    name: kube-auditlog-forwarder
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-18T07:42:15Z"
+  hostIP: 192.168.34.31
+  initContainerStatuses:
+  - containerID: cri-o://697d6a55582e9b7b089e46c508b2e2762910dd50539c1ba360799b2fed5a7ab7
+    image: us.icr.io/armada-csutil/ibm-kube-profile-auditlog-syslogforwarder:324-01cc14e8b0afa6f46d4729eb3a5ada5686b1e840
+    imageID: us.icr.io/armada-csutil/ibm-kube-profile-auditlog-syslogforwarder@sha256:83b8ddca3aa6cdab9b6dd0460b639966f2b523bb6784bea4e85549ccdce21f73
+    lastState: {}
+    name: dlc-init
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: cri-o://697d6a55582e9b7b089e46c508b2e2762910dd50539c1ba360799b2fed5a7ab7
+        exitCode: 0
+        finishedAt: "2024-06-18T07:42:14Z"
+        reason: Completed
+        startedAt: "2024-06-18T07:42:14Z"
+  phase: Running
+  podIP: 172.21.237.81
+  podIPs:
+  - ip: 172.21.237.81
+  qosClass: Burstable
+  startTime: "2024-06-18T07:41:54Z"

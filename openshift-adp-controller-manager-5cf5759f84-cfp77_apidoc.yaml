@@ -1,0 +1,398 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "oadp.openshift.io/v1alpha1",
+          "kind": "DataProtectionApplication",
+          "metadata": {
+            "name": "velero-sample"
+          },
+          "spec": {
+            "backupLocations": [
+              {
+                "velero": {
+                  "config": {
+                    "profile": "default",
+                    "region": "us-east-1"
+                  },
+                  "credential": {
+                    "key": "cloud",
+                    "name": "cloud-credentials"
+                  },
+                  "default": true,
+                  "objectStorage": {
+                    "bucket": "my-bucket-name",
+                    "prefix": "velero"
+                  },
+                  "provider": "aws"
+                }
+              }
+            ],
+            "configuration": {
+              "nodeAgent": {
+                "enable": true,
+                "uploaderType": "restic"
+              },
+              "velero": {
+                "defaultPlugins": [
+                  "openshift",
+                  "aws",
+                  "kubevirt"
+                ]
+              }
+            },
+            "snapshotLocations": [
+              {
+                "velero": {
+                  "config": {
+                    "profile": "default",
+                    "region": "us-west-2"
+                  },
+                  "provider": "aws"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "apiVersion": "velero.io/v1",
+          "kind": "Backup",
+          "metadata": {
+            "name": "backup",
+            "namespace": "openshift-adp"
+          },
+          "spec": {}
+        },
+        {
+          "apiVersion": "velero.io/v1",
+          "kind": "BackupStorageLocation",
+          "metadata": {
+            "name": "backupstoragelocation",
+            "namespace": "openshift-adp"
+          },
+          "spec": {}
+        },
+        {
+          "apiVersion": "velero.io/v1",
+          "kind": "DeleteBackupRequest",
+          "metadata": {
+            "name": "deletebackuprequest",
+            "namespace": "openshift-adp"
+          },
+          "spec": {}
+        },
+        {
+          "apiVersion": "velero.io/v1",
+          "kind": "DownloadRequest",
+          "metadata": {
+            "name": "downloadrequest",
+            "namespace": "openshift-adp"
+          },
+          "spec": {}
+        },
+        {
+          "apiVersion": "velero.io/v1",
+          "kind": "PodVolumeBackup",
+          "metadata": {
+            "name": "podvolumebackup",
+            "namespace": "openshift-adp"
+          },
+          "spec": {}
+        },
+        {
+          "apiVersion": "velero.io/v1",
+          "kind": "PodVolumeRestore",
+          "metadata": {
+            "name": "podvolumerestore",
+            "namespace": "openshift-adp"
+          },
+          "spec": {}
+        },
+        {
+          "apiVersion": "velero.io/v1",
+          "kind": "Restore",
+          "metadata": {
+            "name": "restore",
+            "namespace": "openshift-adp"
+          },
+          "spec": {}
+        },
+        {
+          "apiVersion": "velero.io/v1",
+          "kind": "Schedule",
+          "metadata": {
+            "name": "schedule",
+            "namespace": "openshift-adp"
+          },
+          "spec": {}
+        },
+        {
+          "apiVersion": "velero.io/v1",
+          "kind": "ServerStatusRequest",
+          "metadata": {
+            "name": "serverstatusrequest",
+            "namespace": "openshift-adp"
+          },
+          "spec": {}
+        },
+        {
+          "apiVersion": "velero.io/v1",
+          "kind": "VolumeSnapshotLocation",
+          "metadata": {
+            "name": "volumesnapshotlocation",
+            "namespace": "openshift-adp"
+          },
+          "spec": {}
+        }
+      ]
+    capabilities: Seamless Upgrades
+    categories: |
+      Cloud Provider,Developer Tools,Modernization & Migration,OpenShift Optional,Storage
+    certified: "false"
+    cni.projectcalico.org/containerID: 9a30de7f044dd40858a96de9b81abf6f3091ef00a8c25247f77c077b62bbe1ff
+    cni.projectcalico.org/podIP: 172.21.38.17/32
+    cni.projectcalico.org/podIPs: 172.21.38.17/32
+    containerImage: registry.redhat.io/oadp/oadp-rhel9-operator@sha256:03c7f22a55eb4e9a2f8a74cdad31dc1e87efe502d2fbcda638e2e7cd070cb633
+    createdAt: "2024-06-03T13:19:18Z"
+    description: OADP (OpenShift API for Data Protection) operator sets up and installs
+      Data Protection Applications on the OpenShift platform.
+    features.operators.openshift.io/cnf: "false"
+    features.operators.openshift.io/cni: "false"
+    features.operators.openshift.io/csi: "false"
+    features.operators.openshift.io/disconnected: "true"
+    features.operators.openshift.io/fips-compliant: "true"
+    features.operators.openshift.io/proxy-aware: "true"
+    features.operators.openshift.io/tls-profiles: "false"
+    features.operators.openshift.io/token-auth-aws: "true"
+    features.operators.openshift.io/token-auth-azure: "false"
+    features.operators.openshift.io/token-auth-gcp: "false"
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.38.17"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    olm.operatorGroup: bcdr-operator-group
+    olm.operatorNamespace: oadp-velero
+    olm.skipRange: '>=0.0.0 <1.3.2'
+    olm.targetNamespaces: oadp-velero
+    openshift.io/scc: restricted-v2
+    operatorframework.io/properties: '{"properties":[{"type":"olm.gvk","value":{"group":"oadp.openshift.io","kind":"CloudStorage","version":"v1alpha1"}},{"type":"olm.gvk","value":{"group":"oadp.openshift.io","kind":"DataProtectionApplication","version":"v1alpha1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"Backup","version":"v1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"BackupRepository","version":"v1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"BackupStorageLocation","version":"v1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"DataDownload","version":"v2alpha1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"DataUpload","version":"v2alpha1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"DeleteBackupRequest","version":"v1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"DownloadRequest","version":"v1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"PodVolumeBackup","version":"v1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"PodVolumeRestore","version":"v1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"Restore","version":"v1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"Schedule","version":"v1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"ServerStatusRequest","version":"v1"}},{"type":"olm.gvk","value":{"group":"velero.io","kind":"VolumeSnapshotLocation","version":"v1"}},{"type":"olm.package","value":{"packageName":"redhat-oadp-operator","version":"1.3.2"}}]}'
+    operatorframework.io/suggested-namespace: openshift-adp
+    operators.openshift.io/infrastructure-features: '["Disconnected"]'
+    operators.openshift.io/must-gather-image: registry.redhat.io/oadp/oadp-mustgather-rhel9@sha256:7ab3fde9fcfc48bd8b59b0eb3d92f5a3141cc3b99b11e815454943626b2f0a87
+    operators.openshift.io/valid-subscription: '["OpenShift Container Platform", "OpenShift
+      Platform Plus"]'
+    operators.operatorframework.io/builder: operator-sdk-v1.23.0
+    operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+    repository: https://github.com/openshift/oadp-operator
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    support: Red Hat
+  creationTimestamp: "2024-06-11T15:32:04Z"
+  generateName: openshift-adp-controller-manager-5cf5759f84-
+  labels:
+    control-plane: controller-manager
+    pod-template-hash: 5cf5759f84
+  name: openshift-adp-controller-manager-5cf5759f84-cfp77
+  namespace: oadp-velero
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: openshift-adp-controller-manager-5cf5759f84
+    uid: 4ce54e9f-6832-4694-a333-d985fe8a568c
+  resourceVersion: "175693758"
+  uid: 32a7e688-0b38-4017-ba51-ae655563f8fb
+spec:
+  containers:
+  - args:
+    - --leader-elect
+    command:
+    - /manager
+    env:
+    - name: WATCH_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.annotations['olm.targetNamespaces']
+    - name: RELATED_IMAGE_VELERO
+      value: registry.redhat.io/oadp/oadp-velero-rhel9@sha256:9ab6bd1c70cb1fb4a641ba977e9b8ebfa727109756091e2e74026f5ecdc9841f
+    - name: RELATED_IMAGE_VELERO_RESTORE_HELPER
+      value: registry.redhat.io/oadp/oadp-velero-restic-restore-helper-rhel9@sha256:729b1ebdd406a05e32808c533ff56177684f89fd22e5066aa6fc4d4e79c61ea5
+    - name: RELATED_IMAGE_OPENSHIFT_VELERO_PLUGIN
+      value: registry.redhat.io/oadp/oadp-velero-plugin-rhel9@sha256:8cf7db63e1a44782d7b069e2aa430230f3eede5713c4b1875f85293ec0231b46
+    - name: RELATED_IMAGE_VELERO_PLUGIN_FOR_AWS
+      value: registry.redhat.io/oadp/oadp-velero-plugin-for-aws-rhel9@sha256:da4b96d00c3399eb1e988fe32177884f6c6c6050415189c1d9f8fc997e043adf
+    - name: RELATED_IMAGE_VELERO_PLUGIN_FOR_MICROSOFT_AZURE
+      value: registry.redhat.io/oadp/oadp-velero-plugin-for-microsoft-azure-rhel9@sha256:07d5fc600bd802b76efec722716f6a4127e6d23dd8f21a043ab747743dbd8ee6
+    - name: RELATED_IMAGE_VELERO_PLUGIN_FOR_GCP
+      value: registry.redhat.io/oadp/oadp-velero-plugin-for-gcp-rhel9@sha256:c6449d12f766d556b6aec7341d630dc52e5e778d837ae5df5b946c287e6f3579
+    - name: RELATED_IMAGE_VELERO_PLUGIN_FOR_CSI
+      value: registry.redhat.io/oadp/oadp-velero-plugin-for-csi-rhel9@sha256:095c5131f86c0c87b3e521d1636cf89d671c0c660d1b40b32baf210e7250776e
+    - name: RELATED_IMAGE_KUBEVIRT_VELERO_PLUGIN
+      value: registry.redhat.io/oadp/oadp-kubevirt-velero-plugin-rhel9@sha256:634eea5a9c11f0fa86c538dae3998c90f77c2d7e36266541dab5010fee296926
+    - name: RELATED_IMAGE_MUSTGATHER
+      value: registry.redhat.io/oadp/oadp-mustgather-rhel9@sha256:7ab3fde9fcfc48bd8b59b0eb3d92f5a3141cc3b99b11e815454943626b2f0a87
+    - name: OPERATOR_CONDITION_NAME
+      value: oadp-operator.v1.3.2
+    image: registry.redhat.io/oadp/oadp-rhel9-operator@sha256:03c7f22a55eb4e9a2f8a74cdad31dc1e87efe502d2fbcda638e2e7cd070cb633
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: 8081
+        scheme: HTTP
+      initialDelaySeconds: 15
+      periodSeconds: 20
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: manager
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /readyz
+        port: 8081
+        scheme: HTTP
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: "1"
+        memory: 512Mi
+      requests:
+        cpu: 500m
+        memory: 128Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsUser: 1000750000
+    startupProbe:
+      failureThreshold: 12
+      httpGet:
+        path: /healthz
+        port: 8081
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/openshift/serviceaccount
+      name: bound-sa-token
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-7s4s2
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: openshift-adp-controller-manager-dockercfg-xwnlg
+  nodeName: 192.168.32.25
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000750000
+    runAsNonRoot: true
+    seLinuxOptions:
+      level: s0:c27,c24
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: openshift-adp-controller-manager
+  serviceAccountName: openshift-adp-controller-manager
+  terminationGracePeriodSeconds: 10
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: bound-sa-token
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          audience: openshift
+          expirationSeconds: 3600
+          path: token
+  - name: kube-api-access-7s4s2
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:32:04Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:35:15Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:35:15Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T15:32:04Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://51643203ca19d5d085ce9c863139a12d3c8f782e281b156df29ca6318fd40fd2
+    image: registry.redhat.io/oadp/oadp-rhel9-operator@sha256:03c7f22a55eb4e9a2f8a74cdad31dc1e87efe502d2fbcda638e2e7cd070cb633
+    imageID: registry.redhat.io/oadp/oadp-rhel9-operator@sha256:03c7f22a55eb4e9a2f8a74cdad31dc1e87efe502d2fbcda638e2e7cd070cb633
+    lastState: {}
+    name: manager
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T15:35:04Z"
+  hostIP: 192.168.32.25
+  phase: Running
+  podIP: 172.21.38.17
+  podIPs:
+  - ip: 172.21.38.17
+  qosClass: Burstable
+  startTime: "2024-06-11T15:32:04Z"

@@ -1,0 +1,254 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 458dc141bc7af4a6a34dece5e8523463f085b7b9611402b1cc99c392f47d84d6
+    cni.projectcalico.org/podIP: ""
+    cni.projectcalico.org/podIPs: ""
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.7.72"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-06-23T13:00:00Z"
+  generateName: consumption-metrics-monitor-job-28652460-
+  labels:
+    batch.kubernetes.io/controller-uid: 41fe3b48-2bc7-4a86-8da7-35092d838cb0
+    batch.kubernetes.io/job-name: consumption-metrics-monitor-job-28652460
+    controller-uid: 41fe3b48-2bc7-4a86-8da7-35092d838cb0
+    job-name: consumption-metrics-monitor-job-28652460
+    workload: consumption-metrics-monitor
+  name: consumption-metrics-monitor-job-28652460-jkjpp
+  namespace: consumption-metrics-monitor
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: consumption-metrics-monitor-job-28652460
+    uid: 41fe3b48-2bc7-4a86-8da7-35092d838cb0
+  resourceVersion: "208902449"
+  uid: 2e4ea9dd-6e40-4a04-8ac1-aa6e3f34746d
+spec:
+  containers:
+  - env:
+    - name: PRODUCT_REG_USERNAME
+      valueFrom:
+        secretKeyRef:
+          key: username
+          name: product-reg-apikey
+    - name: PRODUCT_REG_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: product-reg-apikey
+    - name: AWS_MYSQL_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: aws-mysql-secret
+    - name: SEGMENT_WRITE_KEY
+      valueFrom:
+        secretKeyRef:
+          key: apikey
+          name: segment-secret
+    - name: CONFIGMAP_NAME
+      value: cmm-config
+    - name: NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: TLS_CA_CERT
+      value: /mnt/tls/ca
+    - name: TLS_CERT
+      value: /mnt/tls/tls.crt
+    - name: TLS_KEY
+      value: /mnt/tls/tls.key
+    - name: JOB_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: PUSHGATEWAY_NAME
+      value: consumption-metrics-monitor-pushgateway
+    - name: PUSHGATEWAY_PORT
+      value: "9091"
+    image: icr.io/automation-saas-platform/consumption-metrics-monitor:20240524134944-dev-ac9b4a70a65fc9ec9ed57a60b89ebc7b04dccbbe
+    imagePullPolicy: Always
+    name: consumption-metrics-monitor
+    resources:
+      limits:
+        cpu: 400m
+        memory: 128Mi
+      requests:
+        cpu: 200m
+        memory: 64Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000980000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/secret-volume
+      name: secret-volume
+      readOnly: true
+    - mountPath: /etc/prometheus-token
+      name: prometheus-token
+      readOnly: true
+    - mountPath: /etc/sendgrid-apikey
+      name: sendgrid-apikey
+      readOnly: true
+    - mountPath: /mnt/tls
+      name: tls
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6zdrj
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: consumption-metrics-monitor-pull-secret
+  nodeName: 192.168.34.33
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: OnFailure
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000980000
+    seLinuxOptions:
+      level: s0:c31,c25
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: cmm-sa
+  serviceAccountName: cmm-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: secret-volume
+    secret:
+      defaultMode: 420
+      secretName: subscription-mgr-secret
+  - name: prometheus-token
+    secret:
+      defaultMode: 420
+      secretName: prometheus-secret
+  - name: sendgrid-apikey
+    secret:
+      defaultMode: 420
+      secretName: cmm-sendgrid-apikey
+  - name: tls
+    projected:
+      defaultMode: 420
+      sources:
+      - secret:
+          items:
+          - key: ca.crt
+            path: ca/cmm-ca.crt
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          name: cmm-cert
+      - secret:
+          items:
+          - key: ca.crt
+            path: ca/product-reg-ca.crt
+          name: product-reg-ca-cert
+      - secret:
+          items:
+          - key: ca.crt
+            path: ca/pushgateway-ca.crt
+          name: cmm-pushgateway-server-cert
+  - name: kube-api-access-6zdrj
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-23T13:00:00Z"
+    reason: PodCompleted
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-23T13:05:28Z"
+    reason: PodCompleted
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-23T13:05:28Z"
+    reason: PodCompleted
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-23T13:00:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://4e871dd748d8b5d034dde7144e91d200583a3466795857d8db4f7bde48a10be9
+    image: icr.io/automation-saas-platform/consumption-metrics-monitor:20240524134944-dev-ac9b4a70a65fc9ec9ed57a60b89ebc7b04dccbbe
+    imageID: icr.io/automation-saas-platform/consumption-metrics-monitor@sha256:af11605599e08fe3937b2be5a50e64d71aaf343db1a0c732ec835b70db2f0817
+    lastState: {}
+    name: consumption-metrics-monitor
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: cri-o://4e871dd748d8b5d034dde7144e91d200583a3466795857d8db4f7bde48a10be9
+        exitCode: 0
+        finishedAt: "2024-06-23T13:05:27Z"
+        reason: Completed
+        startedAt: "2024-06-23T13:00:02Z"
+  hostIP: 192.168.34.33
+  phase: Succeeded
+  podIP: 172.21.7.72
+  podIPs:
+  - ip: 172.21.7.72
+  qosClass: Burstable
+  startTime: "2024-06-23T13:00:00Z"

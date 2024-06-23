@@ -1,0 +1,185 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    openshift.io/scc: privileged
+  creationTimestamp: "2024-06-11T13:37:00Z"
+  generateName: uptycs-osquery-
+  labels:
+    cname: staging
+    controller-revision-hash: 645f5d6d4b
+    ctype: public
+    name: uptycs-osquery
+    pod-template-generation: "3"
+    provider: ibm
+    region: us-east
+    resource: uptycs-osquery
+    resource-type: daemonset
+    scope: a_f54c77c51e9e4f189a7d1de589b2e203
+  name: uptycs-osquery-29qpb
+  namespace: ibm-services-system
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: uptycs-osquery
+    uid: 95b2b506-35c4-4a67-9b56-8c92b44649a9
+  resourceVersion: "175422067"
+  uid: c82efaad-ed5b-47ae-b20a-a3c48a79eef5
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - 192.168.33.23
+  containers:
+  - env:
+    - name: CHROOT_DIR
+      value: /host
+    - name: SOFTWARE_DIR
+      value: /opt/uptycs/osquery
+    envFrom:
+    - secretRef:
+        name: uptycs-secret
+    image: us.icr.io/armada-csutil/uptycs-osquery:110-16f7b5889fd783560e8bb80085a2647027e23040
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      exec:
+        command:
+        - /bin/sh
+        - -c
+        - elapsedtime=$(( ($(date +%s) - $(stat "/host/opt/uptycs/osquery/osquery.db/$(ls
+          -t1 /host/opt/uptycs/osquery/osquery.db | head -n 1)" -c %Y)) / 60 )); if
+          [ $elapsedtime -gt 5 ];then exit 1; else exit 0; fi;
+      failureThreshold: 3
+      initialDelaySeconds: 300
+      periodSeconds: 300
+      successThreshold: 1
+      timeoutSeconds: 10
+    name: uptycs-osquery
+    resources:
+      limits:
+        cpu: 1500m
+        memory: 750Mi
+      requests:
+        cpu: 200m
+        memory: 100Mi
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /host
+      name: host
+    - mountPath: /host/opt/uptycs/osquery
+      name: osquery
+    - mountPath: /etc/osquery/flags
+      name: config
+    - mountPath: /etc/osquery/secrets
+      name: secret
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-8msdw
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostIPC: true
+  hostNetwork: true
+  hostPID: true
+  imagePullSecrets:
+  - name: kubeprofiles-registry
+  nodeName: 192.168.33.23
+  nodeSelector:
+    topology.kubernetes.io/region: us-east
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  volumes:
+  - hostPath:
+      path: /
+      type: ""
+    name: host
+  - hostPath:
+      path: /opt/uptycs/osquery
+      type: ""
+    name: osquery
+  - configMap:
+      defaultMode: 420
+      name: uptycs-config
+    name: config
+  - name: secret
+    secret:
+      defaultMode: 420
+      secretName: uptycs-secret
+  - name: kube-api-access-8msdw
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:37:00Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:37:11Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:37:11Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-11T13:37:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://d832bcd50564a4ed87a7e0d723df6b4af5f225d832823ee8e93fe7bc86863840
+    image: us.icr.io/armada-csutil/uptycs-osquery:110-16f7b5889fd783560e8bb80085a2647027e23040
+    imageID: us.icr.io/armada-csutil/uptycs-osquery@sha256:c077b0fe0d3c63b31a1adc56aab8d64562ec70eb87dddc500565c9150fb1761e
+    lastState: {}
+    name: uptycs-osquery
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-06-11T13:37:10Z"
+  hostIP: 192.168.33.23
+  phase: Running
+  podIP: 192.168.33.23
+  podIPs:
+  - ip: 192.168.33.23
+  qosClass: Burstable
+  startTime: "2024-06-11T13:37:00Z"

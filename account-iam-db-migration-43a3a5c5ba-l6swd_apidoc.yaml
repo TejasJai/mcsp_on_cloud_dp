@@ -1,0 +1,172 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 626fd1cbb007c2a80dcc5226b4ef645eb491147688c10957b010f8384b40b01a
+    cni.projectcalico.org/podIP: ""
+    cni.projectcalico.org/podIPs: ""
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.21.7.123"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: anyuid
+  creationTimestamp: "2024-06-20T12:13:06Z"
+  generateName: account-iam-db-migration-43a3a5c5ba-
+  labels:
+    batch.kubernetes.io/controller-uid: d0c3b87e-6092-4ff3-a14f-095486c30f05
+    batch.kubernetes.io/job-name: account-iam-db-migration-43a3a5c5ba
+    by-squad: mcsp-user-management
+    controller-uid: d0c3b87e-6092-4ff3-a14f-095486c30f05
+    for-product: all
+    job-name: account-iam-db-migration-43a3a5c5ba
+    name: account-iam
+  name: account-iam-db-migration-43a3a5c5ba-l6swd
+  namespace: msp-user-manager
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: account-iam-db-migration-43a3a5c5ba
+    uid: d0c3b87e-6092-4ff3-a14f-095486c30f05
+  resourceVersion: "201345425"
+  uid: 8a09c158-21bf-4675-a67b-1ce0a7927a90
+spec:
+  containers:
+  - args:
+    - /dbmigration/run.sh
+    command:
+    - /bin/sh
+    - -c
+    envFrom:
+    - secretRef:
+        name: account-iam-database-secret
+    image: icr.io/automation-saas-platform/access-management/account-iam:20240620103839-main-26018133515e4db5501f3a0e58b6c56a3ee53e3e
+    imagePullPolicy: Always
+    name: dbmigrate
+    resources:
+      limits:
+        cpu: 500m
+        memory: 600Mi
+      requests:
+        cpu: 100m
+        memory: 300Mi
+    securityContext:
+      capabilities:
+        drop:
+        - MKNOD
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-sckgm
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: account-iam-global-registry-secret
+  - name: account-iam-migration-dockercfg-9z478
+  nodeName: 192.168.34.33
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext:
+    seLinuxOptions:
+      level: s0:c31,c5
+  serviceAccount: account-iam-migration
+  serviceAccountName: account-iam-migration
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: account-iam-token
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          audience: openshift
+          expirationSeconds: 7200
+          path: account-iam-token
+  - name: kube-api-access-sckgm
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-20T12:13:06Z"
+    reason: PodCompleted
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-20T12:13:26Z"
+    reason: PodCompleted
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-20T12:13:26Z"
+    reason: PodCompleted
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-06-20T12:13:06Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://2b114b350b5217239b180758068775e64a8e453650e92498507cd9e194963cb8
+    image: icr.io/automation-saas-platform/access-management/account-iam:20240620103839-main-26018133515e4db5501f3a0e58b6c56a3ee53e3e
+    imageID: icr.io/automation-saas-platform/access-management/account-iam@sha256:0c3034e28925367e1b6b2a571580dc1fb89697594dc3bd848889d2ba1e273ce2
+    lastState: {}
+    name: dbmigrate
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: cri-o://2b114b350b5217239b180758068775e64a8e453650e92498507cd9e194963cb8
+        exitCode: 0
+        finishedAt: "2024-06-20T12:13:25Z"
+        reason: Completed
+        startedAt: "2024-06-20T12:13:21Z"
+  hostIP: 192.168.34.33
+  phase: Succeeded
+  podIP: 172.21.7.123
+  podIPs:
+  - ip: 172.21.7.123
+  qosClass: Burstable
+  startTime: "2024-06-20T12:13:06Z"
